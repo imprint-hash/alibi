@@ -5,8 +5,22 @@ rules, watches that exact Pyth feed against Hyperliquid, anchors evidence on Sui
 every incident in Walrus Memory, so the next warning is sharper. Early-warning and evidence only: it never
 predicts or promises how a market or a dispute resolves.
 
-Scope: Polymarket markets settling on Pyth spot gold (Metal.XAU/USD) and silver (Metal.XAG/USD); EUR/USD as a
-bonus. WTI/Brent code paths exist, but our Pyth key is not entitled to commodity futures, and the report says so.
+Scope: Polymarket markets settling on Pyth spot gold (Metal.XAU/USD) and silver (Metal.XAG/USD), plus EUR/USD
+and USD/JPY. WTI/Brent code paths exist, but our Pyth key is not entitled to commodity futures, and the report says so.
+
+## How to test
+
+1. Open **https://alibi-flame.vercel.app**.
+2. Click a **TRY** chip, such as "Gold up or down". A live check takes 1–2 minutes and shows each step: market rules,
+   Pyth, Hyperliquid, Sui via Tatum, then Walrus Memory. If you can't wait, click **"Open the saved gold report"**.
+3. Click **Show why** to see the 7 checks, the Walrus precedents (blob IDs with Walruscan links), and the on-chain
+   Pyth record read through Tatum.
+4. Scroll to **Learned**, **Evidence** and **Plans**. Evidence links each Sui transaction to Suiscan. Plans lists
+   the real paid agent receipts.
+5. Open **/proof** to see the counts read from the `proof/` files: Tatum calls, Walrus writes and Sui transactions.
+6. Try the agent paywall:
+   `curl -X POST https://alibi-flame.vercel.app/api/agent/check -H 'Content-Type: application/json' -d '{"url":"<polymarket link>"}'`
+   returns **HTTP 402** with the x402 payment requirement (0.05 USDC on Sui). For the paid flow, see `agent/client.js`.
 
 ```
 npm test                         # node --test
