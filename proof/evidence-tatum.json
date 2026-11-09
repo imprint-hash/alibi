@@ -1,14 +1,9 @@
 {
-  "generatedAt": "2026-11-09T13:02:49.273Z",
+  "generatedAt": "2026-11-09T22:12:23.612Z",
   "source": "Tatum Sui gRPC getTransaction per digest (Tatum Data API transaction history does not support Sui; see proof/tatum-data-support.json)",
-  "rates": {
-    "SUI_USD": 0.84258248,
-    "USDC_USD": 0.9995535,
-    "source": "CoinGecko",
-    "via": "Tatum Data API /v4/data/rate/symbol"
-  },
-  "totalGasSui": 0.013662,
-  "totalUsd": 0.0115,
+  "rates": null,
+  "totalGasSui": 0.022384,
+  "totalUsd": null,
   "txs": [
     {
       "digest": "EJkydhS1E8Lkjrhc28uvpFxuRGtVTL7BiMqUjtQKQWKJ",
@@ -22,7 +17,7 @@
       "gasMist": "5040603",
       "cost": {
         "sui": 0.005041,
-        "usd": 0.00425
+        "usd": null
       }
     },
     {
@@ -37,7 +32,7 @@
       "gasMist": "5040603",
       "cost": {
         "sui": 0.005041,
-        "usd": 0.00425
+        "usd": null
       }
     },
     {
@@ -52,7 +47,52 @@
       "gasMist": "3581126",
       "cost": {
         "sui": 0.003581,
-        "usd": 0.00302
+        "usd": null
+      }
+    },
+    {
+      "digest": "8TbXu8mQEJ2mrvvC2c8i6DuX89dSPZW513xYmv2r9tSp",
+      "kind": "create",
+      "feedId": "0xa995d00bb36a63cef7fd2c287dc105fc8f3d93779f062f09551b0af3e81ec30b",
+      "executedVia": "tatum",
+      "loggedAt": "2026-11-09T13:04:00.415Z",
+      "explorer": "https://suiscan.xyz/mainnet/tx/8TbXu8mQEJ2mrvvC2c8i6DuX89dSPZW513xYmv2r9tSp",
+      "readVia": "tatum",
+      "success": true,
+      "gasMist": "5040603",
+      "cost": {
+        "sui": 0.005041,
+        "usd": null
+      }
+    },
+    {
+      "digest": "3EPBaoqExPof4E4N8pwTAFxoSQQUPNRde9dNN8MptMuf",
+      "kind": "update",
+      "feedId": "0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2",
+      "executedVia": "tatum",
+      "loggedAt": "2026-11-09T22:08:28.088Z",
+      "explorer": "https://suiscan.xyz/mainnet/tx/3EPBaoqExPof4E4N8pwTAFxoSQQUPNRde9dNN8MptMuf",
+      "readVia": "tatum",
+      "success": true,
+      "gasMist": "100326",
+      "cost": {
+        "sui": 0.0001,
+        "usd": null
+      }
+    },
+    {
+      "digest": "4ahhzBQe6qQKudYWbPvKr8pLgfBBMT1qtdSWjhGXSjPu",
+      "kind": "update",
+      "feedId": "0xf2fb02c32b055c805e7238d628e5e9dadef274376114eb1f012337cabe93871e",
+      "executedVia": "tatum",
+      "loggedAt": "2026-11-09T22:09:19.585Z",
+      "explorer": "https://suiscan.xyz/mainnet/tx/4ahhzBQe6qQKudYWbPvKr8pLgfBBMT1qtdSWjhGXSjPu",
+      "readVia": "tatum",
+      "success": true,
+      "gasMist": "3581126",
+      "cost": {
+        "sui": 0.003581,
+        "usd": null
       }
     }
   ]

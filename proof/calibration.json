@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-09T16:20:08.702Z",
+  "generatedAt": "2026-11-09T20:35:26.685Z",
   "days": 90,
   "window": "16:59 ET ±5 min",
   "printChannel": "fixed_rate@1000ms",
@@ -182,6 +182,66 @@
           "p99": 4.312155093855186,
           "settleP99": 3.9339674526583934,
           "settleMax": 3.9339674526583934
+        }
+      }
+    },
+    "USDJPY": {
+      "symbol": "FX.USD/JPY",
+      "tradingDays": 64,
+      "daysMissing": [],
+      "thresholds": {
+        "confRatio": 11.38,
+        "spikeBps": 6.9,
+        "staleGapSec": 5,
+        "frozenRunSec": 31,
+        "divergenceBps": 5.9,
+        "settlementOnly": {
+          "confRatio": 11.38,
+          "spikeBps": 5.6,
+          "frozenRunSec": 31,
+          "divergenceBps": 4.5
+        }
+      },
+      "stats": {
+        "minutes": {
+          "settlement": 64,
+          "window": 639,
+          "baseline": 128
+        },
+        "baselineMedianConfBps": 0.316,
+        "confMultiple": {
+          "settleMedian": 1.62,
+          "windowP90": 6.55,
+          "windowP99": 11.38,
+          "baselineP99": 6.63,
+          "shareOfBaselineAtThreshold": 0
+        },
+        "excursionBps": {
+          "windowP50": 0.8,
+          "windowP99": 5.6,
+          "baselineP99": 6.9,
+          "max": 7.6
+        },
+        "maxPrintGapSec": {
+          "windowP50": 1,
+          "windowP99": 1,
+          "max": 1
+        },
+        "sameRunSec": {
+          "windowP50": 7,
+          "windowP99": 31,
+          "baselineP99": 22,
+          "max": 59
+        },
+        "missingSettlementCandles": 0,
+        "divergence": {
+          "from": "2026-10-23T08:15:00.000Z",
+          "bars5m": 3305,
+          "settlementBars": 30,
+          "p50": 1.2327791350275064,
+          "p99": 5.94994808581939,
+          "settleP99": 4.495948479402712,
+          "settleMax": 4.495948479402712
         }
       }
     }
