@@ -100,6 +100,6 @@ We scanned 10 days of real Pyth history for gold, silver and EUR/USD, minute by 
 
 ## Links
 
-- Repo: TODO(link): <repo URL>
-- Live demo: TODO(link): <demo URL>
+- Repo: https://github.com/imprint-hash/alibi
+- Live demo: https://alibi-flame.vercel.app
 - Demo video: TODO(link): <video URL>
