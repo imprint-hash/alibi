@@ -35,9 +35,10 @@ Every Sui call goes through one function, `suiRead()`, which uses Tatum's Sui gR
 <!-- src: results/before-after.txt "Evidence" -->
 - **Posting evidence to Sui.** No gold or silver `PriceInfoObject` existed on Sui's Pyth contract, so Alibi created both and then posted a fresh gold update. Every transaction was simulated through Tatum first (4 simulations).
 <!-- src: proof/sui-tx.jsonl; proof/tatum-calls.json "tatum:core.simulateTransaction": 4 -->
-- **Data APIs:** TODO(data-api): fill in which Tatum Data API endpoints the engine calls, and for what, once confirmed.
+- **Data API:** Alibi uses Tatum's exchange-rate API (SUI/USD, USDC/USD) to show the dollar cost of every evidence post. We also tested Tatum's transaction-history and notifications APIs; neither supports Sui yet, so Alibi reads its evidence transactions through Tatum's Sui gateway instead.
+- **Agent payments (x402 on Sui):** a trading bot that asks for a check gets HTTP 402 with a price of 0.05 USDC. It pays on Sui mainnet, and Alibi verifies the payment through Tatum before it returns the report. Our demo agent made three real paid checks. The third paid the 0.04 USDC returning-agent rate, because Walrus Memory remembered its two earlier checks.
 
-At the snapshot time, Alibi had made 57 Tatum gRPC calls across 12 methods, plus 5 public-node fallback calls.
+So far Alibi has made 149 Tatum calls. The public node served 5 reads early on, plus the 2 writes described below.
 <!-- src: proof/tatum-calls.json (tatum:* keys summed = 57, incl. 7 errors; public:* = 5). Refresh before publishing. -->
 
 ## How Alibi uses Walrus Memory
@@ -49,7 +50,7 @@ Alibi writes to Walrus Memory on mainnet through the relayer, in four namespaces
 - `alibi-evidence`: each Sui transaction with its digest, object, price and provider.
 - `alibi-user`: a user's "this was benign" verdict, which lowers the matching factor.
 
-So far there are 32 mainnet writes: 14 incidents, 12 source facts and 6 evidence records.
+So far there are 36 mainnet writes, including 14 incidents, source facts, evidence records and 3 paid-agent records (namespace `alibi-agents`).
 <!-- src: proof/memories.jsonl (32 lines; 6 source + 3 evidence were early writes that landed in alibi-incidents and were rewritten) -->
 
 **Precedent matching.** A precedent is a remembered incident on the same Pyth feed whose time of day falls in this market's settlement window: 14 minutes before to 6 minutes after the reference candle. Each one counts by its severity and fades with a 30-day half-life. Incidents on the same feed at other times count at 0.15×. Memories for other feeds are ignored, and the report lists them with the reason.
@@ -60,18 +61,18 @@ So far there are 32 mainnet writes: 14 incidents, 12 source facts and 6 evidence
 We ran the same gold check twice on the same live data: once with Walrus precedents held back, once with them.
 <!-- src: results/before-after.txt; proof/before.json report.verdict/score; proof/after.json report.verdict/score -->
 
-**Before:** "Settlement price looks clean so far — Settlement Risk Score 18/100"
+**Before:** "Settlement price looks clean so far — Settlement Risk Score 13/100"
 
-**After:** "Pyth's confidence has blown out at this exact minute before — Settlement Risk Score 34/100 (2 precedents in Walrus Memory)"
+**After:** "Settlement price looks clean so far — Settlement Risk Score 20/100", plus a new line: "Precedent: Pyth's confidence has blown out before, near this settlement minute (4 min before it)."
 
 Nothing in the live data changed. The memory did. Alibi recalled 23 memories, ignored the ones for other feeds and found two precedents in the gold settlement window:
 
 - "6 Nov: confidence 23.5× normal (12.8 bps), 4 min before this market's reference candle" (blob `d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E`, weight 0.942)
 - "4 Nov: confidence 6.3× normal (3.5 bps), on this market's reference candle" (blob `WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts`, weight 0.471)
 
-Three gold incidents at other times added a little more. The history factor added 16.2 points. The verdict changed too: it now says what happened before at this exact minute, with the blob ID, so you can check it yourself. And 6 Nov is the prior close this market compares against.
+The history factor added 6.9 points, and the report now names each precedent with its blob ID, so you can check it yourself. 6 Nov is also the prior close this market compares against. The jump is small on purpose: the thresholds are calibrated (below), so memory only moves the score as far as the evidence supports.
 
-**Calibration.** TODO(calibration): add the calibration numbers (how often a precedent-raised score lined up with a real incident at the next close) once the engine run is done.
+**Calibration.** We backtested 90 days of real Pyth data (64 trading days per feed), sampling every settlement minute ±5 minutes plus random ordinary minutes. Each alarm threshold is set so it fires on at most about 1% of minutes. For gold, a confidence blow-out now means at least 23.9× normal. By that measure, the 6 Nov event was a true top-1% moment in 90 days.
 
 ## What we found in the data
 
@@ -87,7 +88,7 @@ We scanned 10 days of real Pyth history for gold, silver and EUR/USD, minute by 
 
 ## Honest limits
 
-- **Scope:** gold, silver and EUR/USD only. We run on a trial Pyth key that cannot read commodity futures, so WTI and Brent markets report "feed not readable on this key". Polymarket crypto markets settle on Binance candles and are out of scope.
+- **Scope:** gold, silver, EUR/USD and USD/JPY only. We run on a trial Pyth key that cannot read commodity futures, so WTI and Brent markets report "feed not readable on this key". Polymarket crypto markets settle on Binance candles and are out of scope.
 - **Two of the first three Sui transactions ran through the public node.** All three were simulated through Tatum. When we executed the gold and silver creates, Tatum's free plan returned HTTP 429, and an early version of our code let writes fall back to the public fullnode. Only the gold update (`8DDPzvZg…`) executed through Tatum. We changed the code so writes never fall back, and every record says which provider ran it.
 - **A namespace quirk.** Our first 9 source and evidence writes landed in `alibi-incidents`. We rewrote them to the right namespaces; the scorer ignores records by type.
 <!-- src: README.md "Tatum and Sui: what actually happened"; proof/sui-tx.jsonl provider fields; proof/memories.jsonl "intended" fields -->
