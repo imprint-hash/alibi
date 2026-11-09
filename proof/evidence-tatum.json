@@ -1,0 +1,59 @@
+{
+  "generatedAt": "2026-11-09T13:02:49.273Z",
+  "source": "Tatum Sui gRPC getTransaction per digest (Tatum Data API transaction history does not support Sui; see proof/tatum-data-support.json)",
+  "rates": {
+    "SUI_USD": 0.84258248,
+    "USDC_USD": 0.9995535,
+    "source": "CoinGecko",
+    "via": "Tatum Data API /v4/data/rate/symbol"
+  },
+  "totalGasSui": 0.013662,
+  "totalUsd": 0.0115,
+  "txs": [
+    {
+      "digest": "EJkydhS1E8Lkjrhc28uvpFxuRGtVTL7BiMqUjtQKQWKJ",
+      "kind": "create",
+      "feedId": "0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2",
+      "executedVia": "public-fullnode",
+      "loggedAt": "2026-11-09T07:26:55.929Z",
+      "explorer": "https://suiscan.xyz/mainnet/tx/EJkydhS1E8Lkjrhc28uvpFxuRGtVTL7BiMqUjtQKQWKJ",
+      "readVia": "tatum",
+      "success": true,
+      "gasMist": "5040603",
+      "cost": {
+        "sui": 0.005041,
+        "usd": 0.00425
+      }
+    },
+    {
+      "digest": "9H5uqXw8m6NAwKc3ShLkZo5tmbS3oCcGmeDMSnkqmdEB",
+      "kind": "create",
+      "feedId": "0xf2fb02c32b055c805e7238d628e5e9dadef274376114eb1f012337cabe93871e",
+      "executedVia": "public-fullnode",
+      "loggedAt": "2026-11-09T07:27:33.727Z",
+      "explorer": "https://suiscan.xyz/mainnet/tx/9H5uqXw8m6NAwKc3ShLkZo5tmbS3oCcGmeDMSnkqmdEB",
+      "readVia": "tatum",
+      "success": true,
+      "gasMist": "5040603",
+      "cost": {
+        "sui": 0.005041,
+        "usd": 0.00425
+      }
+    },
+    {
+      "digest": "8DDPzvZgMnZMGxHitCxJniWSY3QsjJDN3NvaZd1MGP6P",
+      "kind": "update",
+      "feedId": "0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2",
+      "executedVia": "tatum",
+      "loggedAt": "2026-11-09T07:28:16.296Z",
+      "explorer": "https://suiscan.xyz/mainnet/tx/8DDPzvZgMnZMGxHitCxJniWSY3QsjJDN3NvaZd1MGP6P",
+      "readVia": "tatum",
+      "success": true,
+      "gasMist": "3581126",
+      "cost": {
+        "sui": 0.003581,
+        "usd": 0.00302
+      }
+    }
+  ]
+}

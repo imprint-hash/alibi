@@ -1,0 +1,31 @@
+{
+  "name": "total-recall",
+  "version": "1.0.0",
+  "description": "Alibi: checks whether the Pyth price that settles a Polymarket market can be trusted",
+  "main": "src/cli.js",
+  "scripts": {
+    "test": "node --test",
+    "check": "node src/cli.js",
+    "record": "node src/record.js",
+    "scan": "node src/scan.js",
+    "status": "node src/status.js",
+    "syntax": "for f in src/*.js; do node --check $f || exit 1; done"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "private": "true",
+  "dependencies": {
+    "@grpc/grpc-js": "1.14.6",
+    "@mysten-incubation/memwal": "0.1.13",
+    "@mysten/seal": "1.5.2",
+    "@mysten/sui": "2.38.0",
+    "@protobuf-ts/grpc-transport": "2.11.1",
+    "@pythnetwork/hermes-client": "3.1.0",
+    "@pythnetwork/pyth-sui-js": "4.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

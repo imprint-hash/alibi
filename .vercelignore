@@ -1,0 +1,12 @@
+# never upload secrets or local raw data
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+.sui/
+.git/
+data/
+results/
+node_modules/

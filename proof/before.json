@@ -1,0 +1,573 @@
+{
+  "report": {
+    "verdict": "Settlement price looks clean so far — Settlement Risk Score 18/100",
+    "complete": true,
+    "score": 18,
+    "band": "low",
+    "sentences": [
+      "This market settles on the Close of one 1-minute candle vs the same candle on the prior trading day, read from Pyth Metal.XAU/USD at 2026-11-09 21:59Z (the candle timestamped 16:59 ET on 2026-11-09).",
+      "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity. Pyth confidence blew out to 8× its normal width (3.3 bps).",
+      "Memory not used this run: before: Walrus precedents withheld (same live data)."
+    ],
+    "details": {
+      "market": {
+        "question": "Gold (XAUUSD) Up or Down on November 9?",
+        "url": "https://polymarket.com/event/xauusd-up-or-down-on-november-9-2026/xauusd-up-or-down-on-november-9-2026",
+        "endDate": "2026-11-09T22:00:00Z",
+        "outcomes": [
+          {
+            "name": "Up",
+            "price": 0.83
+          },
+          {
+            "name": "Down",
+            "price": 0.17
+          }
+        ]
+      },
+      "rule": {
+        "source": "pyth",
+        "pythCode": "Metal.XAU/USD",
+        "instrument": "XAU",
+        "kind": "close-vs-prior-close",
+        "field": "close",
+        "comparator": ">",
+        "threshold": null,
+        "tieRule": "50-50",
+        "monthRule": "spot",
+        "rollSessions": null,
+        "fallbackSource": "CME COMEX Gold futures (GC) official daily price",
+        "ruleCheck": {
+          "provider": "groq",
+          "cached": true,
+          "agreements": [
+            "source",
+            "pythCode",
+            "field",
+            "kind",
+            "comparator"
+          ],
+          "disagreements": [],
+          "filledByAi": [],
+          "rejected": []
+        }
+      },
+      "settlement": {
+        "contract": "Metal.XAU/USD",
+        "day": "2026-11-09",
+        "sessionOpen": "2026-11-08 23:00Z",
+        "sessionClose": "2026-11-09 22:00Z",
+        "settlementCandle": "2026-11-09 21:59Z",
+        "priorClose": "2026-11-06 21:59Z"
+      },
+      "windowNotes": [],
+      "edgeCases": [
+        "If the close candle has no valid Pyth Close, the last valid Pyth price before it is used.",
+        "No trading at all that session → resolves 50-50.",
+        "The Pyth chart is the source; Alibi reads the same feed through the Pyth History API (which offers several channels whose 1-minute highs/lows can differ slightly).",
+        "A listed date that is not a trading day on the Pyth schedule → resolves 50-50.",
+        "If Pyth has no valid price at all that day (outage), the CME COMEX futures official daily close may be used instead.",
+        "A contract/feed change mid-window → resolves on adjusted prices as shown on Pyth.",
+        "Pyth values are used exactly as published, no rounding: a single bad print counts.",
+        "(AI-read) If the two closing prices are exactly equal, resolve 50-50",
+        "(AI-read) If Gold does not trade at all during the relevant session, resolve 50-50"
+      ],
+      "dataWindow": {
+        "from": "2026-11-08 23:00Z",
+        "to": "2026-11-09 12:08Z",
+        "mode": "live-window"
+      },
+      "dataSources": [
+        {
+          "name": "Pyth symbol metadata (public)",
+          "ok": true,
+          "detail": "Metal.XAU/USD: id 346, channel fixed_rate@200ms, schedule from Pyth"
+        },
+        {
+          "name": "Pyth Metal.XAU/USD (settlement feed)",
+          "ok": true,
+          "detail": "970 1m candles + 6216 prints (21 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
+        },
+        {
+          "name": "Hyperliquid xyz:GOLD",
+          "ok": true,
+          "detail": "3910 1m candles",
+          "independent": true
+        }
+      ],
+      "reasons": [
+        {
+          "factor": "thin",
+          "severity": 0.82,
+          "weight": 8,
+          "points": 6.5,
+          "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+        },
+        {
+          "factor": "confidence",
+          "severity": 0.8,
+          "weight": 8,
+          "points": 6.4,
+          "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+        },
+        {
+          "factor": "distance",
+          "severity": 0.38,
+          "weight": 12,
+          "points": 4.6,
+          "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+        }
+      ],
+      "notMeasured": [],
+      "onchain": {
+        "line": "On-chain record (Sui, via Tatum): price 4100.969 ± 0.32 at 2026-11-09 07:28:11Z, 280.7 min old; matches what Pyth published at that second (0 bps); -19.4 bps vs live Pyth. Object 0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de v1078223512, checkpoint 343353304.",
+        "notes": [
+          "On-chain copy is 280.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 280.7 min old."
+        ],
+        "feed": "Metal.XAU/USD",
+        "objectId": "0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de",
+        "providers": [
+          "tatum",
+          "tatum"
+        ],
+        "tatumCalls": 2,
+        "checkpoint": "343353304",
+        "epoch": "1306",
+        "version": "1078223512",
+        "ok": true,
+        "price": 4100.969,
+        "conf": 0.32,
+        "confBps": 0.78,
+        "publishTime": 1794209291,
+        "ageMin": 280.7,
+        "vsLiveBps": -19.4,
+        "livePublishTime": 1794226174,
+        "vsSameSecondBps": 0,
+        "status": "matches",
+        "provider": "tatum"
+      },
+      "precedents": [],
+      "otherSameFeed": [],
+      "memory": {
+        "backend": "walrus-mainnet",
+        "recalled": 0,
+        "errors": [
+          "before: Walrus precedents withheld (same live data)"
+        ],
+        "before": 18,
+        "after": 18,
+        "changes": [],
+        "used": [],
+        "ignored": []
+      },
+      "liquidityNote": "core 03:00–13:30 ET (London open to COMEX close); 13:30–17:00 ET and the Asian session are thin"
+    }
+  },
+  "raw": {
+    "input": "xauusd-up-or-down-on-november-9-2026",
+    "at": "2026-11-09T12:08:50.000Z",
+    "dataSources": [
+      {
+        "name": "Pyth symbol metadata (public)",
+        "ok": true,
+        "detail": "Metal.XAU/USD: id 346, channel fixed_rate@200ms, schedule from Pyth"
+      },
+      {
+        "name": "Pyth Metal.XAU/USD (settlement feed)",
+        "ok": true,
+        "detail": "970 1m candles + 6216 prints (21 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
+      },
+      {
+        "name": "Hyperliquid xyz:GOLD",
+        "ok": true,
+        "detail": "3910 1m candles",
+        "independent": true
+      }
+    ],
+    "gaps": [],
+    "market": {
+      "id": "6747255",
+      "slug": "xauusd-up-or-down-on-november-9-2026",
+      "question": "Gold (XAUUSD) Up or Down on November 9?",
+      "resolutionSource": "https://pythdata.app/explore/Metal.XAU%2FUSD",
+      "startDate": "2026-11-06T13:01:25Z",
+      "endDate": "2026-11-09T22:00:00Z",
+      "eventStartTime": "2026-11-09T14:30:00Z",
+      "closed": false,
+      "active": true,
+      "outcomes": [
+        {
+          "name": "Up",
+          "price": 0.83
+        },
+        {
+          "name": "Down",
+          "price": 0.17
+        }
+      ],
+      "bestBid": 0.82,
+      "bestAsk": 0.84,
+      "lastTradePrice": 0.85,
+      "volume": 2832.4548830000003,
+      "threshold": null,
+      "conditionId": "0xa43d21780d03e64a0cce5459f52e920c1e12183bfbb55c11827e09082def973b",
+      "eventSlug": "xauusd-up-or-down-on-november-9-2026",
+      "url": "https://polymarket.com/event/xauusd-up-or-down-on-november-9-2026/xauusd-up-or-down-on-november-9-2026",
+      "fetchedAt": "2026-11-09T12:08:54.085Z"
+    },
+    "spec": {
+      "source": "pyth",
+      "sourceUrl": "https://pythdata.app/explore/Metal.XAU%2FUSD",
+      "pythCode": "Metal.XAU/USD",
+      "instrument": "XAU",
+      "venue": "Pyth spot gold",
+      "monthRule": "spot",
+      "rollSessions": null,
+      "candle": "1m",
+      "field": "close",
+      "kind": "close-vs-prior-close",
+      "comparator": ">",
+      "threshold": null,
+      "tieRule": "50-50",
+      "window": {
+        "type": "day",
+        "day": "2026-11-09"
+      },
+      "timezone": "America/New_York",
+      "fallbackSource": "CME COMEX Gold futures (GC) official daily price",
+      "edgeCases": [
+        "If the close candle has no valid Pyth Close, the last valid Pyth price before it is used.",
+        "No trading at all that session → resolves 50-50.",
+        "The Pyth chart is the source; Alibi reads the same feed through the Pyth History API (which offers several channels whose 1-minute highs/lows can differ slightly).",
+        "A listed date that is not a trading day on the Pyth schedule → resolves 50-50.",
+        "If Pyth has no valid price at all that day (outage), the CME COMEX futures official daily close may be used instead.",
+        "A contract/feed change mid-window → resolves on adjusted prices as shown on Pyth.",
+        "Pyth values are used exactly as published, no rounding: a single bad print counts.",
+        "(AI-read) If the two closing prices are exactly equal, resolve 50-50",
+        "(AI-read) If Gold does not trade at all during the relevant session, resolve 50-50"
+      ],
+      "parsedBy": "deterministic",
+      "closeCandleET": "16:59",
+      "priorDayRule": "trading-day",
+      "windowDescription": "Close price for November 9, 2026 compared to the most recent prior trading day's close",
+      "ruleCheck": {
+        "provider": "groq",
+        "cached": true,
+        "agreements": [
+          "source",
+          "pythCode",
+          "field",
+          "kind",
+          "comparator"
+        ],
+        "disagreements": [],
+        "filledByAi": [],
+        "rejected": []
+      },
+      "inScope": true,
+      "scopeNote": null
+    },
+    "plan": {
+      "days": [
+        "2026-11-09"
+      ],
+      "kind": "close-vs-prior-close",
+      "sessions": [
+        {
+          "day": "2026-11-09",
+          "contract": "Metal.XAU/USD",
+          "next": null,
+          "open": 1794178800,
+          "close": 1794261600,
+          "settleT": 1794261540
+        }
+      ],
+      "notes": [],
+      "windowFrom": 1794178800,
+      "windowTo": 1794261600,
+      "final": {
+        "day": "2026-11-09",
+        "contract": {
+          "symbol": "Metal.XAU/USD",
+          "lazerId": 346,
+          "hermesId": "765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2",
+          "state": "stable",
+          "description": "GOLD / US DOLLAR",
+          "schedule": "America/New_York;0000-1700&1800-2400,0000-1700&1800-2400,0000-1700&1800-2400,0000-1700&1800-2400,0000-1700,C,1800-2400;0907/0000-1430&1800-2400,1126/0000-1430&1800-2400,1127/0000-1445,1224/0000-1345,1225/C,1231/0000-1700,0101/C,0118/0000-1430&1800-2400,0215/0000-1430&1800-2400,0325/0000-1700,0326/C,0531/0000-1430&1800-2400,0618/0000-1300,0705/0000-1430&1800-2400",
+          "exponent": -3,
+          "channel": "fixed_rate@200ms",
+          "spot": true
+        },
+        "next": null,
+        "open": 1794178800,
+        "close": 1794261600,
+        "settleT": 1794261540
+      },
+      "started": true,
+      "ended": false
+    },
+    "dataWindow": {
+      "from": 1794178800,
+      "to": 1794226130,
+      "mode": "live-window"
+    },
+    "priorSession": {
+      "day": "2026-11-06",
+      "open": 1793919600,
+      "close": 1794002400,
+      "settleT": 1794002340
+    },
+    "params": {
+      "median1mRangeBps": 3.8,
+      "spikeBps": 23,
+      "divergenceFloorBps": 10,
+      "divergenceFullBps": 60
+    },
+    "factors": {
+      "divergence": {
+        "measured": true,
+        "perRef": [
+          {
+            "name": "Hyperliquid xyz:GOLD",
+            "independent": true,
+            "n": 789,
+            "maxAbsBps": 8.2,
+            "at": 1794198720,
+            "atSettleBps": null,
+            "basisRatio": 0.9996066862604973,
+            "p95AbsBps": 3.5
+          }
+        ],
+        "best": "Hyperliquid xyz:GOLD",
+        "headlineBps": 8.2,
+        "atSettle": false,
+        "severity": 0
+      },
+      "spikeRevert": {
+        "measured": true,
+        "events": [],
+        "isolatedCount": 0,
+        "worst": null,
+        "severity": 0
+      },
+      "repeated": {
+        "measured": true,
+        "runs": [],
+        "maxRun": 0,
+        "severity": 0
+      },
+      "staleness": {
+        "measured": true,
+        "gaps": [],
+        "maxGapSec": 0,
+        "severity": 0
+      },
+      "confidence": {
+        "measured": true,
+        "medianConfBps": 0.4,
+        "worstConfBps": 3.3,
+        "worstAt": 1794185992.8,
+        "ratio": 8,
+        "events": [
+          {
+            "t": 1794185992.6,
+            "ratio": 6.2,
+            "confBps": 2.6
+          },
+          {
+            "t": 1794185992.8,
+            "ratio": 8,
+            "confBps": 3.3
+          },
+          {
+            "t": 1794211169.6,
+            "ratio": 4,
+            "confBps": 1.7
+          },
+          {
+            "t": 1794211170,
+            "ratio": 4.1,
+            "confBps": 1.7
+          }
+        ],
+        "severity": 0.7986207069572571,
+        "atSettle": null
+      },
+      "thin": {
+        "measured": true,
+        "counts": {
+          "core": 630,
+          "thin": 750,
+          "closed": 0
+        },
+        "thinShare": 0.543,
+        "settleState": "thin",
+        "severity": 0.817391304347826
+      },
+      "distance": {
+        "measured": true,
+        "price": 4108.662,
+        "threshold": 4070.442,
+        "distanceBps": 93.9,
+        "yesSideNow": true,
+        "typical1mRangeBps": 2.7,
+        "typicalMoveBps": 65.2,
+        "movesAway": 1.44,
+        "glitchCouldFlip": false,
+        "severity": 0.3825835069891384,
+        "priceSource": "Metal.XAU/USD",
+        "proxy": false,
+        "thresholdNote": "prior close 2026-11-06 (Pyth candle 21:59Z)"
+      }
+    },
+    "onchain": {
+      "feed": "Metal.XAU/USD",
+      "objectId": "0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de",
+      "providers": [
+        "tatum",
+        "tatum"
+      ],
+      "tatumCalls": 2,
+      "checkpoint": "343353304",
+      "epoch": "1306",
+      "version": "1078223512",
+      "ok": true,
+      "price": 4100.969,
+      "conf": 0.32,
+      "confBps": 0.78,
+      "publishTime": 1794209291,
+      "ageMin": 280.7,
+      "vsLiveBps": -19.4,
+      "livePublishTime": 1794226174,
+      "vsSameSecondBps": 0,
+      "notes": [
+        "On-chain copy is 280.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 280.7 min old."
+      ],
+      "status": "matches",
+      "provider": "tatum"
+    },
+    "series": {
+      "channel": "fixed_rate@200ms",
+      "candles": 970,
+      "prints": 6216
+    },
+    "context": {
+      "instrument": "XAU",
+      "feed": "Metal.XAU/USD",
+      "feedFamily": "Metal.XAU/USD",
+      "bucket": "session-close",
+      "settleMinuteET": 1019,
+      "settleT": 1794261540,
+      "liquidityNote": "core 03:00–13:30 ET (London open to COMEX close); 13:30–17:00 ET and the Asian session are thin"
+    },
+    "memory": {
+      "backend": "walrus-mainnet",
+      "recalled": 0,
+      "errors": [
+        "before: Walrus precedents withheld (same live data)"
+      ]
+    },
+    "learning": {
+      "before": {
+        "score": 18,
+        "band": "low",
+        "reasons": [
+          {
+            "factor": "thin",
+            "severity": 0.82,
+            "weight": 8,
+            "points": 6.5,
+            "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+          },
+          {
+            "factor": "confidence",
+            "severity": 0.8,
+            "weight": 8,
+            "points": 6.4,
+            "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+          },
+          {
+            "factor": "distance",
+            "severity": 0.38,
+            "weight": 12,
+            "points": 4.6,
+            "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+          }
+        ],
+        "notMeasured": []
+      },
+      "after": {
+        "score": 18,
+        "band": "low",
+        "reasons": [
+          {
+            "factor": "thin",
+            "severity": 0.82,
+            "weight": 8,
+            "points": 6.5,
+            "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+          },
+          {
+            "factor": "confidence",
+            "severity": 0.8,
+            "weight": 8,
+            "points": 6.4,
+            "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+          },
+          {
+            "factor": "distance",
+            "severity": 0.38,
+            "weight": 12,
+            "points": 4.6,
+            "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+          }
+        ],
+        "notMeasured": []
+      },
+      "delta": 0,
+      "changes": [],
+      "used": [],
+      "ignored": [],
+      "precedents": [],
+      "otherSameFeed": [],
+      "history": {
+        "measured": true,
+        "severity": 0,
+        "precedents": 0,
+        "otherSameFeed": 0,
+        "benignVerdicts": 0,
+        "weightSum": 0,
+        "lines": []
+      },
+      "explanation": "No past incident in Walrus Memory matches this feed, so the score is from live data only."
+    },
+    "score": {
+      "score": 18,
+      "band": "low",
+      "reasons": [
+        {
+          "factor": "thin",
+          "severity": 0.82,
+          "weight": 8,
+          "points": 6.5,
+          "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+        },
+        {
+          "factor": "confidence",
+          "severity": 0.8,
+          "weight": 8,
+          "points": 6.4,
+          "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+        },
+        {
+          "factor": "distance",
+          "severity": 0.38,
+          "weight": 12,
+          "points": 4.6,
+          "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+        }
+      ],
+      "notMeasured": []
+    }
+  }
+}

@@ -1,0 +1,1075 @@
+{
+  "report": {
+    "verdict": "Pyth's confidence has blown out at this exact minute before — Settlement Risk Score 34/100 (2 precedents in Walrus Memory)",
+    "complete": true,
+    "score": 34,
+    "band": "elevated",
+    "sentences": [
+      "This market settles on the Close of one 1-minute candle vs the same candle on the prior trading day, read from Pyth Metal.XAU/USD at 2026-11-09 21:59Z (the candle timestamped 16:59 ET on 2026-11-09).",
+      "2 precedent(s) in Walrus Memory at this exact settlement window (+3 other incident(s) on this feed). Settlement minute falls in thin hours; 54% of the open window is outside core liquidity.",
+      "Walrus Memory holds 2 precedents for this feed at this exact settlement window, e.g. \"6 Nov: confidence 23.5× normal (12.8 bps), 4 min before this market's reference candle\" (blob d08odBwC…); that history adds 16.2 points."
+    ],
+    "details": {
+      "market": {
+        "question": "Gold (XAUUSD) Up or Down on November 9?",
+        "url": "https://polymarket.com/event/xauusd-up-or-down-on-november-9-2026/xauusd-up-or-down-on-november-9-2026",
+        "endDate": "2026-11-09T22:00:00Z",
+        "outcomes": [
+          {
+            "name": "Up",
+            "price": 0.83
+          },
+          {
+            "name": "Down",
+            "price": 0.17
+          }
+        ]
+      },
+      "rule": {
+        "source": "pyth",
+        "pythCode": "Metal.XAU/USD",
+        "instrument": "XAU",
+        "kind": "close-vs-prior-close",
+        "field": "close",
+        "comparator": ">",
+        "threshold": null,
+        "tieRule": "50-50",
+        "monthRule": "spot",
+        "rollSessions": null,
+        "fallbackSource": "CME COMEX Gold futures (GC) official daily price",
+        "ruleCheck": {
+          "provider": "groq",
+          "cached": true,
+          "agreements": [
+            "source",
+            "pythCode",
+            "field",
+            "kind",
+            "comparator"
+          ],
+          "disagreements": [],
+          "filledByAi": [],
+          "rejected": []
+        }
+      },
+      "settlement": {
+        "contract": "Metal.XAU/USD",
+        "day": "2026-11-09",
+        "sessionOpen": "2026-11-08 23:00Z",
+        "sessionClose": "2026-11-09 22:00Z",
+        "settlementCandle": "2026-11-09 21:59Z",
+        "priorClose": "2026-11-06 21:59Z"
+      },
+      "windowNotes": [],
+      "edgeCases": [
+        "If the close candle has no valid Pyth Close, the last valid Pyth price before it is used.",
+        "No trading at all that session → resolves 50-50.",
+        "The Pyth chart is the source; Alibi reads the same feed through the Pyth History API (which offers several channels whose 1-minute highs/lows can differ slightly).",
+        "A listed date that is not a trading day on the Pyth schedule → resolves 50-50.",
+        "If Pyth has no valid price at all that day (outage), the CME COMEX futures official daily close may be used instead.",
+        "A contract/feed change mid-window → resolves on adjusted prices as shown on Pyth.",
+        "Pyth values are used exactly as published, no rounding: a single bad print counts.",
+        "(AI-read) If the two closing prices are exactly equal, resolve 50-50",
+        "(AI-read) If Gold does not trade at all during the relevant session, resolve 50-50"
+      ],
+      "dataWindow": {
+        "from": "2026-11-08 23:00Z",
+        "to": "2026-11-09 12:08Z",
+        "mode": "live-window"
+      },
+      "dataSources": [
+        {
+          "name": "Pyth symbol metadata (public)",
+          "ok": true,
+          "detail": "Metal.XAU/USD: id 346, channel fixed_rate@200ms, schedule from Pyth"
+        },
+        {
+          "name": "Pyth Metal.XAU/USD (settlement feed)",
+          "ok": true,
+          "detail": "970 1m candles + 6216 prints (21 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
+        },
+        {
+          "name": "Hyperliquid xyz:GOLD",
+          "ok": true,
+          "detail": "3910 1m candles",
+          "independent": true
+        }
+      ],
+      "reasons": [
+        {
+          "factor": "history",
+          "severity": 0.81,
+          "weight": 20,
+          "points": 16.2,
+          "text": "2 precedent(s) in Walrus Memory at this exact settlement window (+3 other incident(s) on this feed)."
+        },
+        {
+          "factor": "thin",
+          "severity": 0.82,
+          "weight": 8,
+          "points": 6.5,
+          "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+        },
+        {
+          "factor": "confidence",
+          "severity": 0.8,
+          "weight": 8,
+          "points": 6.4,
+          "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+        },
+        {
+          "factor": "distance",
+          "severity": 0.38,
+          "weight": 12,
+          "points": 4.6,
+          "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+        }
+      ],
+      "notMeasured": [],
+      "onchain": {
+        "line": "On-chain record (Sui, via Tatum): price 4100.969 ± 0.32 at 2026-11-09 07:28:11Z, 280.7 min old; matches what Pyth published at that second (0 bps); -19.4 bps vs live Pyth. Object 0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de v1078223512, checkpoint 343353304.",
+        "notes": [
+          "On-chain copy is 280.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 280.7 min old."
+        ],
+        "feed": "Metal.XAU/USD",
+        "objectId": "0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de",
+        "providers": [
+          "tatum",
+          "tatum"
+        ],
+        "tatumCalls": 2,
+        "checkpoint": "343353304",
+        "epoch": "1306",
+        "version": "1078223512",
+        "ok": true,
+        "price": 4100.969,
+        "conf": 0.32,
+        "confBps": 0.78,
+        "publishTime": 1794209291,
+        "ageMin": 280.7,
+        "vsLiveBps": -19.4,
+        "livePublishTime": 1794226174,
+        "vsSameSecondBps": 0,
+        "status": "matches",
+        "provider": "tatum"
+      },
+      "precedents": [
+        {
+          "line": "6 Nov: confidence 23.5× normal (12.8 bps), 4 min before this market's reference candle",
+          "blobId": "d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E",
+          "weight": 0.942,
+          "ageDays": 2.6
+        },
+        {
+          "line": "4 Nov: confidence 6.3× normal (3.5 bps), on this market's reference candle",
+          "blobId": "WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts",
+          "weight": 0.471,
+          "ageDays": 4.6
+        }
+      ],
+      "otherSameFeed": [
+        {
+          "line": "5 Nov: confidence 7.6× normal (4.2 bps) (at 16:00Z, outside the settlement window)",
+          "blobId": "KzOuzyYP_otnxY_1z_GCdtvudxv88XCFHNGYvua55Nw",
+          "weight": 0.087
+        },
+        {
+          "line": "6 Nov: confidence 7.3× normal (4 bps) (at 00:00Z, outside the settlement window)",
+          "blobId": "iWmI_uplNx-aBoZ0PAVxM19187pOsT77H-gG29_N9b0",
+          "weight": 0.084
+        },
+        {
+          "line": "30 Oct: confidence 6.8× normal (3.7 bps) (at 14:00Z, outside the settlement window)",
+          "blobId": "ptLXGyXdHf42Ul1WesVsoHwsZR5DTzqku9FKPVe7bMA",
+          "weight": 0.068
+        }
+      ],
+      "memory": {
+        "backend": "walrus-mainnet",
+        "recalled": 23,
+        "errors": [],
+        "before": 18,
+        "after": 34,
+        "changes": [
+          {
+            "factor": "history",
+            "from": 0,
+            "to": 0.81,
+            "points": 16.2,
+            "memories": [
+              {
+                "blobId": "d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E",
+                "weight": 0.942,
+                "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=23.5 | conf_bps=12.8 | median_conf_bps=0.5 | pyth_ohlc=4070.77/4072.275/4070.222/4071.16 | ref_ohlc=4072/4073.3/4071.9/4072.6 | publishers=17 | spread_bps=0.7 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1794002100 | bucket=session-close | when=2026-11-06T21:55:00Z | severity=5.88 | src=pyth-history+hyperliquid"
+              },
+              {
+                "blobId": "WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts",
+                "weight": 0.471,
+                "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.3 | conf_bps=3.5 | median_conf_bps=0.5 | pyth_ohlc=4060.19/4061.617/4060.19/4061.082 | ref_ohlc=4061.4/4062.8/4060.8/4062.8 | publishers=16 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793829540 | bucket=session-close | when=2026-11-04T21:59:00Z | severity=1.57 | src=pyth-history+hyperliquid"
+              },
+              {
+                "blobId": "KzOuzyYP_otnxY_1z_GCdtvudxv88XCFHNGYvua55Nw",
+                "weight": 0.087,
+                "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.6 | conf_bps=4.2 | median_conf_bps=0.5 | pyth_ohlc=4083.695/4088.152/4083.695/4087.536 | ref_ohlc=4083.3/4091.4/4083.3/4088.6 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793894400 | bucket=core | when=2026-11-05T16:00:00Z | severity=1.90 | src=pyth-history+hyperliquid"
+              },
+              {
+                "blobId": "iWmI_uplNx-aBoZ0PAVxM19187pOsT77H-gG29_N9b0",
+                "weight": 0.084,
+                "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.3 | conf_bps=4 | median_conf_bps=0.5 | pyth_ohlc=4086.272/4087.302/4084.07/4084.977 | ref_ohlc=4086.6/4086.6/4084.3/4085.4 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793923200 | bucket=thin | when=2026-11-06T00:00:00Z | severity=1.82 | src=pyth-history+hyperliquid"
+              },
+              {
+                "blobId": "ptLXGyXdHf42Ul1WesVsoHwsZR5DTzqku9FKPVe7bMA",
+                "weight": 0.068,
+                "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.8 | conf_bps=3.7 | median_conf_bps=0.5 | pyth_ohlc=3920.89/3921.143/3917.805/3917.805 | ref_ohlc=3921.5/3922.4/3911.5/3912.5 | publishers=18 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793368800 | bucket=core | when=2026-10-30T14:00:00Z | severity=1.70 | src=pyth-history+hyperliquid"
+              }
+            ]
+          }
+        ],
+        "used": [
+          {
+            "blobId": "d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E",
+            "factor": "history",
+            "weight": 0.942,
+            "ageDays": 2.6,
+            "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=23.5 | conf_bps=12.8 | median_conf_bps=0.5 | pyth_ohlc=4070.77/4072.275/4070.222/4071.16 | ref_ohlc=4072/4073.3/4071.9/4072.6 | publishers=17 | spread_bps=0.7 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1794002100 | bucket=session-close | when=2026-11-06T21:55:00Z | severity=5.88 | src=pyth-history+hyperliquid",
+            "createdAt": "2026-11-09T07:26:15.949403Z"
+          },
+          {
+            "blobId": "WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts",
+            "factor": "history",
+            "weight": 0.471,
+            "ageDays": 4.6,
+            "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.3 | conf_bps=3.5 | median_conf_bps=0.5 | pyth_ohlc=4060.19/4061.617/4060.19/4061.082 | ref_ohlc=4061.4/4062.8/4060.8/4062.8 | publishers=16 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793829540 | bucket=session-close | when=2026-11-04T21:59:00Z | severity=1.57 | src=pyth-history+hyperliquid",
+            "createdAt": "2026-11-09T07:29:13.864525Z"
+          },
+          {
+            "blobId": "KzOuzyYP_otnxY_1z_GCdtvudxv88XCFHNGYvua55Nw",
+            "factor": "history",
+            "weight": 0.087,
+            "ageDays": 3.8,
+            "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.6 | conf_bps=4.2 | median_conf_bps=0.5 | pyth_ohlc=4083.695/4088.152/4083.695/4087.536 | ref_ohlc=4083.3/4091.4/4083.3/4088.6 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793894400 | bucket=core | when=2026-11-05T16:00:00Z | severity=1.90 | src=pyth-history+hyperliquid",
+            "createdAt": "2026-11-09T07:28:11.783866Z"
+          },
+          {
+            "blobId": "iWmI_uplNx-aBoZ0PAVxM19187pOsT77H-gG29_N9b0",
+            "factor": "history",
+            "weight": 0.084,
+            "ageDays": 3.5,
+            "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.3 | conf_bps=4 | median_conf_bps=0.5 | pyth_ohlc=4086.272/4087.302/4084.07/4084.977 | ref_ohlc=4086.6/4086.6/4084.3/4085.4 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793923200 | bucket=thin | when=2026-11-06T00:00:00Z | severity=1.82 | src=pyth-history+hyperliquid",
+            "createdAt": "2026-11-09T07:28:29.562960Z"
+          },
+          {
+            "blobId": "ptLXGyXdHf42Ul1WesVsoHwsZR5DTzqku9FKPVe7bMA",
+            "factor": "history",
+            "weight": 0.068,
+            "ageDays": 9.9,
+            "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.8 | conf_bps=3.7 | median_conf_bps=0.5 | pyth_ohlc=3920.89/3921.143/3917.805/3917.805 | ref_ohlc=3921.5/3922.4/3911.5/3912.5 | publishers=18 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793368800 | bucket=core | when=2026-10-30T14:00:00Z | severity=1.70 | src=pyth-history+hyperliquid",
+            "createdAt": "2026-11-09T07:28:51.676156Z"
+          }
+        ],
+        "ignored": [
+          {
+            "blobId": "mcNsYJWfle08aIcnFKp-xjYb6QZySBL2INxia4Nyv2Y",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "D1biwp1vYovIS2v63tj38ccXkM3By4-CAPKX-VJBIqM",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "wBgSMMUitO9hPWM6-P2crTp9OrqmvNiLioR6yuYTuNQ",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "5TtyrI0VqEWLe-0URT0Hc_tcMVLlDBS2AigxQj3DKL4",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "aM6ulFlUR3WXpPtzZjyam9iah3sz65q-pP14DxHNZbI",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "NIGl0LovxjtvfohEAAAo94E7T0VZEHHu5hlX8B8WA1E",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "SJ0tkDKfKCW-qWNBvvLFqu9WzXQKEzn14Lr8SIttisk",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "qS5_K5lKGhcIOZQ3WC1Lnnc_CQTRIBqDaI48WGbjC5M",
+            "reason": "different feed (FX.EUR/USD)"
+          },
+          {
+            "blobId": "tTFs4I8Flh7CWcydit7gAQOFMey9-0YV_iVr1xYyRhE",
+            "reason": "different feed (Metal.XAG/USD)"
+          },
+          {
+            "blobId": "Tqbf0AEqTIo_uqR9PvpvUX-mNqDQKZSXlARNatV1rzk",
+            "reason": "source record, not an incident"
+          },
+          {
+            "blobId": "FosK5GBo0csEF1zju-K_us9TJ_2BY6suLCHY3O7Fxk4",
+            "reason": "source record, not an incident"
+          },
+          {
+            "blobId": "UP0y_fLqgwb-ebKMnfTMSLP-ZH36u3bnKwkREfOi3os",
+            "reason": "evidence record, not an incident"
+          },
+          {
+            "blobId": "rSISyGnblk-zw5GHzvsQNcKLhrAYSYp_tPGOo5n5J2o",
+            "reason": "source record, not an incident"
+          },
+          {
+            "blobId": "dFQOHNat-I0RrO0k194fHrtGmB_ptXo7Qxr966iF5N4",
+            "reason": "source record, not an incident"
+          },
+          {
+            "blobId": "rx0r5fRb45C-Ui3acrAjYAJyH4fwHwTkRVLaSUT992w",
+            "reason": "evidence record, not an incident"
+          },
+          {
+            "blobId": "1reF5Yny5ke4F-nqdNdobP9GSDlKflh8WM3fQ6uzECg",
+            "reason": "evidence record, not an incident"
+          },
+          {
+            "blobId": "6ZEoiKmbSVypvfxsmmmxTu5mDlQruDBlTpPQUsD3BsM",
+            "reason": "source record, not an incident"
+          },
+          {
+            "blobId": "8g8P8aWdb0XXT23RNzx1phBTzJzk4vdEm0CL1LHRsGQ",
+            "reason": "source record, not an incident"
+          }
+        ]
+      },
+      "liquidityNote": "core 03:00–13:30 ET (London open to COMEX close); 13:30–17:00 ET and the Asian session are thin"
+    }
+  },
+  "raw": {
+    "input": "xauusd-up-or-down-on-november-9-2026",
+    "at": "2026-11-09T12:08:50.000Z",
+    "dataSources": [
+      {
+        "name": "Pyth symbol metadata (public)",
+        "ok": true,
+        "detail": "Metal.XAU/USD: id 346, channel fixed_rate@200ms, schedule from Pyth"
+      },
+      {
+        "name": "Pyth Metal.XAU/USD (settlement feed)",
+        "ok": true,
+        "detail": "970 1m candles + 6216 prints (21 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
+      },
+      {
+        "name": "Hyperliquid xyz:GOLD",
+        "ok": true,
+        "detail": "3910 1m candles",
+        "independent": true
+      }
+    ],
+    "gaps": [],
+    "market": {
+      "id": "6747255",
+      "slug": "xauusd-up-or-down-on-november-9-2026",
+      "question": "Gold (XAUUSD) Up or Down on November 9?",
+      "resolutionSource": "https://pythdata.app/explore/Metal.XAU%2FUSD",
+      "startDate": "2026-11-06T13:01:25Z",
+      "endDate": "2026-11-09T22:00:00Z",
+      "eventStartTime": "2026-11-09T14:30:00Z",
+      "closed": false,
+      "active": true,
+      "outcomes": [
+        {
+          "name": "Up",
+          "price": 0.83
+        },
+        {
+          "name": "Down",
+          "price": 0.17
+        }
+      ],
+      "bestBid": 0.82,
+      "bestAsk": 0.84,
+      "lastTradePrice": 0.85,
+      "volume": 2832.4548830000003,
+      "threshold": null,
+      "conditionId": "0xa43d21780d03e64a0cce5459f52e920c1e12183bfbb55c11827e09082def973b",
+      "eventSlug": "xauusd-up-or-down-on-november-9-2026",
+      "url": "https://polymarket.com/event/xauusd-up-or-down-on-november-9-2026/xauusd-up-or-down-on-november-9-2026",
+      "fetchedAt": "2026-11-09T12:08:54.085Z"
+    },
+    "spec": {
+      "source": "pyth",
+      "sourceUrl": "https://pythdata.app/explore/Metal.XAU%2FUSD",
+      "pythCode": "Metal.XAU/USD",
+      "instrument": "XAU",
+      "venue": "Pyth spot gold",
+      "monthRule": "spot",
+      "rollSessions": null,
+      "candle": "1m",
+      "field": "close",
+      "kind": "close-vs-prior-close",
+      "comparator": ">",
+      "threshold": null,
+      "tieRule": "50-50",
+      "window": {
+        "type": "day",
+        "day": "2026-11-09"
+      },
+      "timezone": "America/New_York",
+      "fallbackSource": "CME COMEX Gold futures (GC) official daily price",
+      "edgeCases": [
+        "If the close candle has no valid Pyth Close, the last valid Pyth price before it is used.",
+        "No trading at all that session → resolves 50-50.",
+        "The Pyth chart is the source; Alibi reads the same feed through the Pyth History API (which offers several channels whose 1-minute highs/lows can differ slightly).",
+        "A listed date that is not a trading day on the Pyth schedule → resolves 50-50.",
+        "If Pyth has no valid price at all that day (outage), the CME COMEX futures official daily close may be used instead.",
+        "A contract/feed change mid-window → resolves on adjusted prices as shown on Pyth.",
+        "Pyth values are used exactly as published, no rounding: a single bad print counts.",
+        "(AI-read) If the two closing prices are exactly equal, resolve 50-50",
+        "(AI-read) If Gold does not trade at all during the relevant session, resolve 50-50"
+      ],
+      "parsedBy": "deterministic",
+      "closeCandleET": "16:59",
+      "priorDayRule": "trading-day",
+      "windowDescription": "Close price for November 9, 2026 compared to the most recent prior trading day's close",
+      "ruleCheck": {
+        "provider": "groq",
+        "cached": true,
+        "agreements": [
+          "source",
+          "pythCode",
+          "field",
+          "kind",
+          "comparator"
+        ],
+        "disagreements": [],
+        "filledByAi": [],
+        "rejected": []
+      },
+      "inScope": true,
+      "scopeNote": null
+    },
+    "plan": {
+      "days": [
+        "2026-11-09"
+      ],
+      "kind": "close-vs-prior-close",
+      "sessions": [
+        {
+          "day": "2026-11-09",
+          "contract": "Metal.XAU/USD",
+          "next": null,
+          "open": 1794178800,
+          "close": 1794261600,
+          "settleT": 1794261540
+        }
+      ],
+      "notes": [],
+      "windowFrom": 1794178800,
+      "windowTo": 1794261600,
+      "final": {
+        "day": "2026-11-09",
+        "contract": {
+          "symbol": "Metal.XAU/USD",
+          "lazerId": 346,
+          "hermesId": "765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2",
+          "state": "stable",
+          "description": "GOLD / US DOLLAR",
+          "schedule": "America/New_York;0000-1700&1800-2400,0000-1700&1800-2400,0000-1700&1800-2400,0000-1700&1800-2400,0000-1700,C,1800-2400;0907/0000-1430&1800-2400,1126/0000-1430&1800-2400,1127/0000-1445,1224/0000-1345,1225/C,1231/0000-1700,0101/C,0118/0000-1430&1800-2400,0215/0000-1430&1800-2400,0325/0000-1700,0326/C,0531/0000-1430&1800-2400,0618/0000-1300,0705/0000-1430&1800-2400",
+          "exponent": -3,
+          "channel": "fixed_rate@200ms",
+          "spot": true
+        },
+        "next": null,
+        "open": 1794178800,
+        "close": 1794261600,
+        "settleT": 1794261540
+      },
+      "started": true,
+      "ended": false
+    },
+    "dataWindow": {
+      "from": 1794178800,
+      "to": 1794226130,
+      "mode": "live-window"
+    },
+    "priorSession": {
+      "day": "2026-11-06",
+      "open": 1793919600,
+      "close": 1794002400,
+      "settleT": 1794002340
+    },
+    "params": {
+      "median1mRangeBps": 3.8,
+      "spikeBps": 23,
+      "divergenceFloorBps": 10,
+      "divergenceFullBps": 60
+    },
+    "factors": {
+      "divergence": {
+        "measured": true,
+        "perRef": [
+          {
+            "name": "Hyperliquid xyz:GOLD",
+            "independent": true,
+            "n": 789,
+            "maxAbsBps": 8.2,
+            "at": 1794198720,
+            "atSettleBps": null,
+            "basisRatio": 0.9996066862604973,
+            "p95AbsBps": 3.5
+          }
+        ],
+        "best": "Hyperliquid xyz:GOLD",
+        "headlineBps": 8.2,
+        "atSettle": false,
+        "severity": 0
+      },
+      "spikeRevert": {
+        "measured": true,
+        "events": [],
+        "isolatedCount": 0,
+        "worst": null,
+        "severity": 0
+      },
+      "repeated": {
+        "measured": true,
+        "runs": [],
+        "maxRun": 0,
+        "severity": 0
+      },
+      "staleness": {
+        "measured": true,
+        "gaps": [],
+        "maxGapSec": 0,
+        "severity": 0
+      },
+      "confidence": {
+        "measured": true,
+        "medianConfBps": 0.4,
+        "worstConfBps": 3.3,
+        "worstAt": 1794185992.8,
+        "ratio": 8,
+        "events": [
+          {
+            "t": 1794185992.6,
+            "ratio": 6.2,
+            "confBps": 2.6
+          },
+          {
+            "t": 1794185992.8,
+            "ratio": 8,
+            "confBps": 3.3
+          },
+          {
+            "t": 1794211169.6,
+            "ratio": 4,
+            "confBps": 1.7
+          },
+          {
+            "t": 1794211170,
+            "ratio": 4.1,
+            "confBps": 1.7
+          }
+        ],
+        "severity": 0.7986207069572571,
+        "atSettle": null
+      },
+      "thin": {
+        "measured": true,
+        "counts": {
+          "core": 630,
+          "thin": 750,
+          "closed": 0
+        },
+        "thinShare": 0.543,
+        "settleState": "thin",
+        "severity": 0.817391304347826
+      },
+      "distance": {
+        "measured": true,
+        "price": 4108.662,
+        "threshold": 4070.442,
+        "distanceBps": 93.9,
+        "yesSideNow": true,
+        "typical1mRangeBps": 2.7,
+        "typicalMoveBps": 65.2,
+        "movesAway": 1.44,
+        "glitchCouldFlip": false,
+        "severity": 0.3825835069891384,
+        "priceSource": "Metal.XAU/USD",
+        "proxy": false,
+        "thresholdNote": "prior close 2026-11-06 (Pyth candle 21:59Z)"
+      }
+    },
+    "onchain": {
+      "feed": "Metal.XAU/USD",
+      "objectId": "0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de",
+      "providers": [
+        "tatum",
+        "tatum"
+      ],
+      "tatumCalls": 2,
+      "checkpoint": "343353304",
+      "epoch": "1306",
+      "version": "1078223512",
+      "ok": true,
+      "price": 4100.969,
+      "conf": 0.32,
+      "confBps": 0.78,
+      "publishTime": 1794209291,
+      "ageMin": 280.7,
+      "vsLiveBps": -19.4,
+      "livePublishTime": 1794226174,
+      "vsSameSecondBps": 0,
+      "notes": [
+        "On-chain copy is 280.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 280.7 min old."
+      ],
+      "status": "matches",
+      "provider": "tatum"
+    },
+    "series": {
+      "channel": "fixed_rate@200ms",
+      "candles": 970,
+      "prints": 6216
+    },
+    "context": {
+      "instrument": "XAU",
+      "feed": "Metal.XAU/USD",
+      "feedFamily": "Metal.XAU/USD",
+      "bucket": "session-close",
+      "settleMinuteET": 1019,
+      "settleT": 1794261540,
+      "liquidityNote": "core 03:00–13:30 ET (London open to COMEX close); 13:30–17:00 ET and the Asian session are thin"
+    },
+    "memory": {
+      "backend": "walrus-mainnet",
+      "recalled": 23,
+      "errors": []
+    },
+    "learning": {
+      "before": {
+        "score": 18,
+        "band": "low",
+        "reasons": [
+          {
+            "factor": "thin",
+            "severity": 0.82,
+            "weight": 8,
+            "points": 6.5,
+            "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+          },
+          {
+            "factor": "confidence",
+            "severity": 0.8,
+            "weight": 8,
+            "points": 6.4,
+            "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+          },
+          {
+            "factor": "distance",
+            "severity": 0.38,
+            "weight": 12,
+            "points": 4.6,
+            "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+          }
+        ],
+        "notMeasured": []
+      },
+      "after": {
+        "score": 34,
+        "band": "elevated",
+        "reasons": [
+          {
+            "factor": "history",
+            "severity": 0.81,
+            "weight": 20,
+            "points": 16.2,
+            "text": "2 precedent(s) in Walrus Memory at this exact settlement window (+3 other incident(s) on this feed)."
+          },
+          {
+            "factor": "thin",
+            "severity": 0.82,
+            "weight": 8,
+            "points": 6.5,
+            "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+          },
+          {
+            "factor": "confidence",
+            "severity": 0.8,
+            "weight": 8,
+            "points": 6.4,
+            "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+          },
+          {
+            "factor": "distance",
+            "severity": 0.38,
+            "weight": 12,
+            "points": 4.6,
+            "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+          }
+        ],
+        "notMeasured": []
+      },
+      "delta": 16,
+      "changes": [
+        {
+          "factor": "history",
+          "from": 0,
+          "to": 0.81,
+          "points": 16.2,
+          "memories": [
+            {
+              "blobId": "d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E",
+              "weight": 0.942,
+              "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=23.5 | conf_bps=12.8 | median_conf_bps=0.5 | pyth_ohlc=4070.77/4072.275/4070.222/4071.16 | ref_ohlc=4072/4073.3/4071.9/4072.6 | publishers=17 | spread_bps=0.7 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1794002100 | bucket=session-close | when=2026-11-06T21:55:00Z | severity=5.88 | src=pyth-history+hyperliquid"
+            },
+            {
+              "blobId": "WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts",
+              "weight": 0.471,
+              "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.3 | conf_bps=3.5 | median_conf_bps=0.5 | pyth_ohlc=4060.19/4061.617/4060.19/4061.082 | ref_ohlc=4061.4/4062.8/4060.8/4062.8 | publishers=16 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793829540 | bucket=session-close | when=2026-11-04T21:59:00Z | severity=1.57 | src=pyth-history+hyperliquid"
+            },
+            {
+              "blobId": "KzOuzyYP_otnxY_1z_GCdtvudxv88XCFHNGYvua55Nw",
+              "weight": 0.087,
+              "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.6 | conf_bps=4.2 | median_conf_bps=0.5 | pyth_ohlc=4083.695/4088.152/4083.695/4087.536 | ref_ohlc=4083.3/4091.4/4083.3/4088.6 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793894400 | bucket=core | when=2026-11-05T16:00:00Z | severity=1.90 | src=pyth-history+hyperliquid"
+            },
+            {
+              "blobId": "iWmI_uplNx-aBoZ0PAVxM19187pOsT77H-gG29_N9b0",
+              "weight": 0.084,
+              "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.3 | conf_bps=4 | median_conf_bps=0.5 | pyth_ohlc=4086.272/4087.302/4084.07/4084.977 | ref_ohlc=4086.6/4086.6/4084.3/4085.4 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793923200 | bucket=thin | when=2026-11-06T00:00:00Z | severity=1.82 | src=pyth-history+hyperliquid"
+            },
+            {
+              "blobId": "ptLXGyXdHf42Ul1WesVsoHwsZR5DTzqku9FKPVe7bMA",
+              "weight": 0.068,
+              "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.8 | conf_bps=3.7 | median_conf_bps=0.5 | pyth_ohlc=3920.89/3921.143/3917.805/3917.805 | ref_ohlc=3921.5/3922.4/3911.5/3912.5 | publishers=18 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793368800 | bucket=core | when=2026-10-30T14:00:00Z | severity=1.70 | src=pyth-history+hyperliquid"
+            }
+          ]
+        }
+      ],
+      "used": [
+        {
+          "blobId": "d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E",
+          "factor": "history",
+          "weight": 0.942,
+          "ageDays": 2.6,
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=23.5 | conf_bps=12.8 | median_conf_bps=0.5 | pyth_ohlc=4070.77/4072.275/4070.222/4071.16 | ref_ohlc=4072/4073.3/4071.9/4072.6 | publishers=17 | spread_bps=0.7 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1794002100 | bucket=session-close | when=2026-11-06T21:55:00Z | severity=5.88 | src=pyth-history+hyperliquid",
+          "createdAt": "2026-11-09T07:26:15.949403Z"
+        },
+        {
+          "blobId": "WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts",
+          "factor": "history",
+          "weight": 0.471,
+          "ageDays": 4.6,
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.3 | conf_bps=3.5 | median_conf_bps=0.5 | pyth_ohlc=4060.19/4061.617/4060.19/4061.082 | ref_ohlc=4061.4/4062.8/4060.8/4062.8 | publishers=16 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793829540 | bucket=session-close | when=2026-11-04T21:59:00Z | severity=1.57 | src=pyth-history+hyperliquid",
+          "createdAt": "2026-11-09T07:29:13.864525Z"
+        },
+        {
+          "blobId": "KzOuzyYP_otnxY_1z_GCdtvudxv88XCFHNGYvua55Nw",
+          "factor": "history",
+          "weight": 0.087,
+          "ageDays": 3.8,
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.6 | conf_bps=4.2 | median_conf_bps=0.5 | pyth_ohlc=4083.695/4088.152/4083.695/4087.536 | ref_ohlc=4083.3/4091.4/4083.3/4088.6 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793894400 | bucket=core | when=2026-11-05T16:00:00Z | severity=1.90 | src=pyth-history+hyperliquid",
+          "createdAt": "2026-11-09T07:28:11.783866Z"
+        },
+        {
+          "blobId": "iWmI_uplNx-aBoZ0PAVxM19187pOsT77H-gG29_N9b0",
+          "factor": "history",
+          "weight": 0.084,
+          "ageDays": 3.5,
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.3 | conf_bps=4 | median_conf_bps=0.5 | pyth_ohlc=4086.272/4087.302/4084.07/4084.977 | ref_ohlc=4086.6/4086.6/4084.3/4085.4 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793923200 | bucket=thin | when=2026-11-06T00:00:00Z | severity=1.82 | src=pyth-history+hyperliquid",
+          "createdAt": "2026-11-09T07:28:29.562960Z"
+        },
+        {
+          "blobId": "ptLXGyXdHf42Ul1WesVsoHwsZR5DTzqku9FKPVe7bMA",
+          "factor": "history",
+          "weight": 0.068,
+          "ageDays": 9.9,
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.8 | conf_bps=3.7 | median_conf_bps=0.5 | pyth_ohlc=3920.89/3921.143/3917.805/3917.805 | ref_ohlc=3921.5/3922.4/3911.5/3912.5 | publishers=18 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793368800 | bucket=core | when=2026-10-30T14:00:00Z | severity=1.70 | src=pyth-history+hyperliquid",
+          "createdAt": "2026-11-09T07:28:51.676156Z"
+        }
+      ],
+      "ignored": [
+        {
+          "blobId": "mcNsYJWfle08aIcnFKp-xjYb6QZySBL2INxia4Nyv2Y",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "D1biwp1vYovIS2v63tj38ccXkM3By4-CAPKX-VJBIqM",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "wBgSMMUitO9hPWM6-P2crTp9OrqmvNiLioR6yuYTuNQ",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "5TtyrI0VqEWLe-0URT0Hc_tcMVLlDBS2AigxQj3DKL4",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "aM6ulFlUR3WXpPtzZjyam9iah3sz65q-pP14DxHNZbI",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "NIGl0LovxjtvfohEAAAo94E7T0VZEHHu5hlX8B8WA1E",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "SJ0tkDKfKCW-qWNBvvLFqu9WzXQKEzn14Lr8SIttisk",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "qS5_K5lKGhcIOZQ3WC1Lnnc_CQTRIBqDaI48WGbjC5M",
+          "reason": "different feed (FX.EUR/USD)"
+        },
+        {
+          "blobId": "tTFs4I8Flh7CWcydit7gAQOFMey9-0YV_iVr1xYyRhE",
+          "reason": "different feed (Metal.XAG/USD)"
+        },
+        {
+          "blobId": "Tqbf0AEqTIo_uqR9PvpvUX-mNqDQKZSXlARNatV1rzk",
+          "reason": "source record, not an incident"
+        },
+        {
+          "blobId": "FosK5GBo0csEF1zju-K_us9TJ_2BY6suLCHY3O7Fxk4",
+          "reason": "source record, not an incident"
+        },
+        {
+          "blobId": "UP0y_fLqgwb-ebKMnfTMSLP-ZH36u3bnKwkREfOi3os",
+          "reason": "evidence record, not an incident"
+        },
+        {
+          "blobId": "rSISyGnblk-zw5GHzvsQNcKLhrAYSYp_tPGOo5n5J2o",
+          "reason": "source record, not an incident"
+        },
+        {
+          "blobId": "dFQOHNat-I0RrO0k194fHrtGmB_ptXo7Qxr966iF5N4",
+          "reason": "source record, not an incident"
+        },
+        {
+          "blobId": "rx0r5fRb45C-Ui3acrAjYAJyH4fwHwTkRVLaSUT992w",
+          "reason": "evidence record, not an incident"
+        },
+        {
+          "blobId": "1reF5Yny5ke4F-nqdNdobP9GSDlKflh8WM3fQ6uzECg",
+          "reason": "evidence record, not an incident"
+        },
+        {
+          "blobId": "6ZEoiKmbSVypvfxsmmmxTu5mDlQruDBlTpPQUsD3BsM",
+          "reason": "source record, not an incident"
+        },
+        {
+          "blobId": "8g8P8aWdb0XXT23RNzx1phBTzJzk4vdEm0CL1LHRsGQ",
+          "reason": "source record, not an incident"
+        }
+      ],
+      "precedents": [
+        {
+          "blobId": "d08odBwCOEO2tJQdn-x2wDG7dxyGyywtVpxzp7J8d4E",
+          "createdAt": "2026-11-09T07:26:15.949403Z",
+          "when": "2026-11-06T21:55:00Z",
+          "pattern": "confidence",
+          "severity": 5.88,
+          "ageDays": 2.6,
+          "weight": 0.942,
+          "offsetMin": 4,
+          "line": "6 Nov: confidence 23.5× normal (12.8 bps), 4 min before this market's reference candle",
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=23.5 | conf_bps=12.8 | median_conf_bps=0.5 | pyth_ohlc=4070.77/4072.275/4070.222/4071.16 | ref_ohlc=4072/4073.3/4071.9/4072.6 | publishers=17 | spread_bps=0.7 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1794002100 | bucket=session-close | when=2026-11-06T21:55:00Z | severity=5.88 | src=pyth-history+hyperliquid",
+          "record": {
+            "kind": "incident",
+            "instrument": "XAU",
+            "feed": "Metal.XAU/USD",
+            "simulated": "no",
+            "pattern": "confidence",
+            "ratio": "23.5",
+            "conf_bps": "12.8",
+            "median_conf_bps": "0.5",
+            "pyth_ohlc": "4070.77/4072.275/4070.222/4071.16",
+            "ref_ohlc": "4072/4073.3/4071.9/4072.6",
+            "publishers": "17",
+            "spread_bps": "0.7",
+            "evidence": "https://pythdata.app/explore/Metal.XAU%2FUSD?t=1794002100",
+            "bucket": "session-close",
+            "when": "2026-11-06T21:55:00Z",
+            "severity": "5.88",
+            "src": "pyth-history+hyperliquid"
+          }
+        },
+        {
+          "blobId": "WzsugL-ETcGRJUEHBvC_3CY4MiO86mk5OSHnFxpgSts",
+          "createdAt": "2026-11-09T07:29:13.864525Z",
+          "when": "2026-11-04T21:59:00Z",
+          "pattern": "confidence",
+          "severity": 1.57,
+          "ageDays": 4.6,
+          "weight": 0.471,
+          "offsetMin": 0,
+          "line": "4 Nov: confidence 6.3× normal (3.5 bps), on this market's reference candle",
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.3 | conf_bps=3.5 | median_conf_bps=0.5 | pyth_ohlc=4060.19/4061.617/4060.19/4061.082 | ref_ohlc=4061.4/4062.8/4060.8/4062.8 | publishers=16 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793829540 | bucket=session-close | when=2026-11-04T21:59:00Z | severity=1.57 | src=pyth-history+hyperliquid",
+          "record": {
+            "kind": "incident",
+            "instrument": "XAU",
+            "feed": "Metal.XAU/USD",
+            "simulated": "no",
+            "pattern": "confidence",
+            "ratio": "6.3",
+            "conf_bps": "3.5",
+            "median_conf_bps": "0.5",
+            "pyth_ohlc": "4060.19/4061.617/4060.19/4061.082",
+            "ref_ohlc": "4061.4/4062.8/4060.8/4062.8",
+            "publishers": "16",
+            "spread_bps": "0.3",
+            "evidence": "https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793829540",
+            "bucket": "session-close",
+            "when": "2026-11-04T21:59:00Z",
+            "severity": "1.57",
+            "src": "pyth-history+hyperliquid"
+          }
+        }
+      ],
+      "otherSameFeed": [
+        {
+          "blobId": "KzOuzyYP_otnxY_1z_GCdtvudxv88XCFHNGYvua55Nw",
+          "createdAt": "2026-11-09T07:28:11.783866Z",
+          "when": "2026-11-05T16:00:00Z",
+          "pattern": "confidence",
+          "severity": 1.9,
+          "ageDays": 3.8,
+          "weight": 0.087,
+          "offsetMin": 359,
+          "line": "5 Nov: confidence 7.6× normal (4.2 bps) (at 16:00Z, outside the settlement window)",
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.6 | conf_bps=4.2 | median_conf_bps=0.5 | pyth_ohlc=4083.695/4088.152/4083.695/4087.536 | ref_ohlc=4083.3/4091.4/4083.3/4088.6 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793894400 | bucket=core | when=2026-11-05T16:00:00Z | severity=1.90 | src=pyth-history+hyperliquid",
+          "record": {
+            "kind": "incident",
+            "instrument": "XAU",
+            "feed": "Metal.XAU/USD",
+            "simulated": "no",
+            "pattern": "confidence",
+            "ratio": "7.6",
+            "conf_bps": "4.2",
+            "median_conf_bps": "0.5",
+            "pyth_ohlc": "4083.695/4088.152/4083.695/4087.536",
+            "ref_ohlc": "4083.3/4091.4/4083.3/4088.6",
+            "publishers": "18",
+            "spread_bps": "0.5",
+            "evidence": "https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793894400",
+            "bucket": "core",
+            "when": "2026-11-05T16:00:00Z",
+            "severity": "1.90",
+            "src": "pyth-history+hyperliquid"
+          }
+        },
+        {
+          "blobId": "iWmI_uplNx-aBoZ0PAVxM19187pOsT77H-gG29_N9b0",
+          "createdAt": "2026-11-09T07:28:29.562960Z",
+          "when": "2026-11-06T00:00:00Z",
+          "pattern": "confidence",
+          "severity": 1.82,
+          "ageDays": 3.5,
+          "weight": 0.084,
+          "offsetMin": -121,
+          "line": "6 Nov: confidence 7.3× normal (4 bps) (at 00:00Z, outside the settlement window)",
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=7.3 | conf_bps=4 | median_conf_bps=0.5 | pyth_ohlc=4086.272/4087.302/4084.07/4084.977 | ref_ohlc=4086.6/4086.6/4084.3/4085.4 | publishers=18 | spread_bps=0.5 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793923200 | bucket=thin | when=2026-11-06T00:00:00Z | severity=1.82 | src=pyth-history+hyperliquid",
+          "record": {
+            "kind": "incident",
+            "instrument": "XAU",
+            "feed": "Metal.XAU/USD",
+            "simulated": "no",
+            "pattern": "confidence",
+            "ratio": "7.3",
+            "conf_bps": "4",
+            "median_conf_bps": "0.5",
+            "pyth_ohlc": "4086.272/4087.302/4084.07/4084.977",
+            "ref_ohlc": "4086.6/4086.6/4084.3/4085.4",
+            "publishers": "18",
+            "spread_bps": "0.5",
+            "evidence": "https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793923200",
+            "bucket": "thin",
+            "when": "2026-11-06T00:00:00Z",
+            "severity": "1.82",
+            "src": "pyth-history+hyperliquid"
+          }
+        },
+        {
+          "blobId": "ptLXGyXdHf42Ul1WesVsoHwsZR5DTzqku9FKPVe7bMA",
+          "createdAt": "2026-11-09T07:28:51.676156Z",
+          "when": "2026-10-30T14:00:00Z",
+          "pattern": "confidence",
+          "severity": 1.7,
+          "ageDays": 9.9,
+          "weight": 0.068,
+          "offsetMin": 419,
+          "line": "30 Oct: confidence 6.8× normal (3.7 bps) (at 14:00Z, outside the settlement window)",
+          "text": "ALIBI-INCIDENT v1 | instrument=XAU | feed=Metal.XAU/USD | simulated=no | pattern=confidence | ratio=6.8 | conf_bps=3.7 | median_conf_bps=0.5 | pyth_ohlc=3920.89/3921.143/3917.805/3917.805 | ref_ohlc=3921.5/3922.4/3911.5/3912.5 | publishers=18 | spread_bps=0.3 | evidence=https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793368800 | bucket=core | when=2026-10-30T14:00:00Z | severity=1.70 | src=pyth-history+hyperliquid",
+          "record": {
+            "kind": "incident",
+            "instrument": "XAU",
+            "feed": "Metal.XAU/USD",
+            "simulated": "no",
+            "pattern": "confidence",
+            "ratio": "6.8",
+            "conf_bps": "3.7",
+            "median_conf_bps": "0.5",
+            "pyth_ohlc": "3920.89/3921.143/3917.805/3917.805",
+            "ref_ohlc": "3921.5/3922.4/3911.5/3912.5",
+            "publishers": "18",
+            "spread_bps": "0.3",
+            "evidence": "https://pythdata.app/explore/Metal.XAU%2FUSD?t=1793368800",
+            "bucket": "core",
+            "when": "2026-10-30T14:00:00Z",
+            "severity": "1.70",
+            "src": "pyth-history+hyperliquid"
+          }
+        }
+      ],
+      "history": {
+        "measured": true,
+        "severity": 0.8083338073526087,
+        "precedents": 2,
+        "otherSameFeed": 3,
+        "benignVerdicts": 0,
+        "weightSum": 1.652,
+        "lines": [
+          "6 Nov: confidence 23.5× normal (12.8 bps), 4 min before this market's reference candle",
+          "4 Nov: confidence 6.3× normal (3.5 bps), on this market's reference candle"
+        ]
+      },
+      "explanation": "Walrus Memory found 2 precedents at this exact settlement window (d08odBwC…, WzsugL-E…) and 3 other incidents on this feed: the history factor adds 16.2 points (score 18 → 34)."
+    },
+    "score": {
+      "score": 34,
+      "band": "elevated",
+      "reasons": [
+        {
+          "factor": "history",
+          "severity": 0.81,
+          "weight": 20,
+          "points": 16.2,
+          "text": "2 precedent(s) in Walrus Memory at this exact settlement window (+3 other incident(s) on this feed)."
+        },
+        {
+          "factor": "thin",
+          "severity": 0.82,
+          "weight": 8,
+          "points": 6.5,
+          "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
+        },
+        {
+          "factor": "confidence",
+          "severity": 0.8,
+          "weight": 8,
+          "points": 6.4,
+          "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+        },
+        {
+          "factor": "distance",
+          "severity": 0.38,
+          "weight": 12,
+          "points": 4.6,
+          "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+        }
+      ],
+      "notMeasured": []
+    }
+  }
+}

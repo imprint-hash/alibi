@@ -1,0 +1,28 @@
+{
+  "tatum:ledger.getServiceInfo": 3,
+  "_updated": "2026-11-09T12:09:31.992Z",
+  "tatum:core.listDynamicFields": 5,
+  "tatum:core.getDynamicField": 6,
+  "tatum:core.getObject:error": 1,
+  "public:core.getObject": 2,
+  "tatum:core.getDynamicField:error": 1,
+  "tatum:core.getObject": 7,
+  "tatum:pyth-sui:getDynamicField": 8,
+  "tatum:pyth-sui:getObject": 13,
+  "tatum:core.simulateTransaction": 4,
+  "tatum:core.signAndExecuteTransaction:quota-error": 2,
+  "_lastError": {
+    "method": "core.simulateTransaction",
+    "code": "UNAVAILABLE",
+    "quota": true,
+    "message": "Received HTTP status code 429",
+    "at": "2026-11-09T07:28:13.439Z"
+  },
+  "public:core.signAndExecuteTransaction": 2,
+  "tatum:core.waitForTransaction": 3,
+  "tatum:core.getDynamicField:quota-error": 1,
+  "public:core.getDynamicField": 1,
+  "tatum:core.getObject:quota-error": 1,
+  "tatum:core.simulateTransaction:quota-error": 1,
+  "tatum:core.signAndExecuteTransaction": 1
+}

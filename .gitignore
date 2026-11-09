@@ -1,0 +1,20 @@
+node_modules/
+# secrets: .env and any variant (keep the empty template)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.keystore
+.sui/
+# local caches and raw recordings
+cache/
+data/
+results/
+
+# internal working notes (kept local, not published)
+PLAN.md
+SUBMISSION.md
+docs/video-script.md
+docs/x-post.md
+docs/deck.md
