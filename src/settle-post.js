@@ -30,7 +30,7 @@ for (const [i, inst] of feeds.entries()) {
   try {
     const r = await postPythUpdate(feed.hermesId, { execute: true });
     log(`${inst}: ${r.action} digest=${r.digest} via=${r.executedVia} ok=${r.executedOk} gas=${r.gasMist} readBack=${r.readBack?.provider} price=${r.readBack?.price?.price}`);
-    const w = await mem.remember(mem.NS.evidence, 'evidence', evidenceRecord(map.pythSymbol, { kind: r.action, digest: r.digest, provider: r.executedVia, gasMist: r.gasMist }, r.readBack, `Alibi evidence: ${map.pythSymbol} posted at the 16:59 ET settlement minute via Tatum gRPC`));
+    const w = await mem.remember(mem.NS.evidence, 'evidence', evidenceRecord(map.pythSymbol, { kind: r.action, digest: r.digest, provider: r.executedVia, gasMist: r.gasMist }, r.readBack, `Alibi evidence: ${map.pythSymbol} posted ${new Date().toISOString()} via Tatum gRPC (scheduled for the 16:59 ET settlement minute; the job ran late because the machine slept)`));
     log(`${inst}: evidence memory ${w.blobId}`);
   } catch (e) {
     log(`${inst}: STOPPED — ${e.message} (no public-node fallback for writes)`);

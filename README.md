@@ -10,6 +10,8 @@ and USD/JPY. WTI/Brent code paths exist, but our Pyth key is not entitled to com
 
 Blog post: [alibi-does-the-price-that-settles-your-b…](https://medium.com/@osagiecynthia517/alibi-does-the-price-that-settles-your-bet-have-an-alibi-ad5bd9aa5b18)
 
+Demo video: https://youtu.be/Nt4z9Y-o3xY
+
 ## How to test
 
 1. Open **https://alibi-flame.vercel.app**.
