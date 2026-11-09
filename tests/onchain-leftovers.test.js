@@ -59,9 +59,11 @@ test('missing severity defaults to the lowest value: listed as a precedent but a
 });
 
 test('headline wording follows the strongest precedent type', () => {
-  assert.match(precedentHeadline([{ pattern: 'confidence', weight: 0.5 }]), /^Pyth's confidence has blown out at this exact minute before$/);
-  assert.match(precedentHeadline([{ pattern: 'spike-revert', weight: 0.6 }, { pattern: 'confidence', weight: 0.2 }]), /spiked and snapped back.*\(and shown confidence there\)/);
-  assert.match(precedentHeadline([{ pattern: 'stale', weight: 0.1 }]), /gone stale/);
+  assert.equal(precedentHeadline([{ pattern: 'confidence', weight: 0.5, offsetMin: 4 }]), "Pyth's confidence has blown out before, near this settlement minute (4 min before it)");
+  assert.equal(precedentHeadline([{ pattern: 'confidence', weight: 0.5, offsetMin: 0 }]), "Pyth's confidence has blown out before, at this exact settlement minute");
+  assert.match(precedentHeadline([{ pattern: 'confidence', weight: 0.5, offsetMin: -3 }]), /\(3 min after it\)/);
+  assert.match(precedentHeadline([{ pattern: 'spike-revert', weight: 0.6, offsetMin: 0 }, { pattern: 'confidence', weight: 0.2, offsetMin: 2 }]), /spiked and snapped back.*\(and shown confidence there\)/);
+  assert.match(precedentHeadline([{ pattern: 'stale', weight: 0.1, offsetMin: 1 }]), /gone stale/);
 });
 
 test('distance is not scored for a hit market that was already hit', () => {
@@ -70,4 +72,21 @@ test('distance is not scored for a hit market that was already hit', () => {
   assert.equal(alreadyHit({ kind: 'hit-high' }, 4500, cs), null);
   assert.equal(alreadyHit({ kind: 'hit-low' }, 4381, cs).t, 60);
   assert.equal(alreadyHit({ kind: 'close-above' }, 4400, cs), null);
+});
+
+test('report: precedent headline leads only when the band is elevated or high; otherwise a secondary line', async () => {
+  const { buildReport } = await import('../src/report.js');
+  const P = [{ pattern: 'confidence', weight: 0.4, offsetMin: 4, line: '6 Nov: confidence 23.5× normal', blobId: 'd08odBwCOEO2' }];
+  const base = (score, band) => ({
+    market: { question: 'Gold Up or Down', url: 'u', endDate: 'e', outcomes: [] }, spec: { source: 'pyth', kind: 'close-vs-prior-close', edgeCases: [], ruleCheck: { agreements: [], disagreements: [], filledByAi: [], rejected: [] } },
+    plan: { sessions: [{ day: '2026-11-09', contract: 'Metal.XAU/USD', settleT: 1794261540, open: 1, close: 2 }], notes: [] }, gaps: [], dataSources: [], memory: { backend: 'walrus-mainnet', recalled: 1, errors: [] },
+    learning: { precedents: P, otherSameFeed: [], changes: [{ factor: 'history', points: 7 }], used: [], ignored: [], before: { score: 12 }, after: { score }, explanation: '' },
+    score: { score, band, reasons: [], notMeasured: [] },
+  });
+  const low = buildReport(base(19, 'low'));
+  assert.match(low.verdict, /^Settlement price looks clean so far/);
+  assert.match(low.secondary, /^Precedent: Pyth's confidence has blown out before, near this settlement minute \(4 min before it\)/);
+  const hi = buildReport(base(45, 'elevated'));
+  assert.match(hi.verdict, /^Pyth's confidence has blown out before, near this settlement minute \(4 min before it\) — Settlement Risk Score 45\/100/);
+  assert.equal(hi.secondary, null);
 });

@@ -9,6 +9,8 @@
 //                multiple of its threshold), recency = 0.5^(age days / 30); simulated memories count half.
 //   other      = incidents on the same feed at other times of day count at 0.15 × weight.
 //   severity   = 1 − exp(−Σ weights)  (saturates: one strong, 3-day-old precedent ≈ 0.6; several → close to 1).
+//   With a 90-day calibration (proof/calibration.json) severity is re-measured against today's p99 threshold
+//   (confidence ratio ÷ confRatio, spike size ÷ spikeBps, divergence ÷ divergenceBps), not the value stored at scan time.
 //   Memories for other feeds/instruments are ignored and listed with the reason.
 // User verdicts ("benign") in alibi-user lower the matching live factor and the history factor.
 import { score, clamp01, WEIGHTS } from './detect.js';
@@ -36,20 +38,38 @@ export function describePrecedent(rec, offsetMin) {
   return `${fmtDay(Date.parse(rec.when))}: ${what}${when}`;
 }
 
-/** Verdict wording that matches what the precedents actually show (strongest precedent's pattern). */
+/** Severity of a remembered incident on today's scale: re-measured against the calibration when possible. Pure. */
+export function effectiveSeverity(rec, cal) {
+  const stored = Number(rec.severity);
+  const num = (k) => Number(rec[k]);
+  if (cal) {
+    if (rec.pattern === 'confidence' && num('ratio') > 0 && cal.confRatio > 0) return { value: num('ratio') / cal.confRatio, basis: `ratio ${rec.ratio}× ÷ 90-day p99 ${cal.confRatio}×` };
+    if (rec.pattern === 'spike-revert' && num('size_bps') > 0 && cal.spikeBps > 0) return { value: num('size_bps') / cal.spikeBps, basis: `${rec.size_bps} bps ÷ 90-day p99 ${cal.spikeBps} bps` };
+    if (rec.pattern === 'divergence' && num('size_bps') > 0 && cal.divergenceBps > 0) return { value: num('size_bps') / cal.divergenceBps, basis: `${rec.size_bps} bps ÷ 90-day p99 ${cal.divergenceBps} bps` };
+  }
+  return Number.isFinite(stored) ? { value: stored, basis: 'stored at scan time' } : { value: HISTORY.missingSeverity, basis: 'missing → lowest' };
+}
+
+/** Verdict wording that matches what the precedents actually show (strongest precedent's pattern + its timing). */
 export const HEADLINES = {
-  confidence: "Pyth's confidence has blown out at this exact minute before",
-  'spike-revert': 'This feed has spiked and snapped back at this exact minute before',
-  divergence: 'This feed has broken away from other markets at this exact minute before',
-  stale: 'This feed has gone stale at this exact minute before',
-  repeated: 'This feed has frozen on one price at this exact minute before',
+  confidence: "Pyth's confidence has blown out",
+  'spike-revert': 'This feed has spiked and snapped back',
+  divergence: 'This feed has broken away from other markets',
+  stale: 'This feed has gone stale',
+  repeated: 'This feed has frozen on one price',
 };
+/** "at this exact settlement minute" only when the offset is 0; otherwise "near this settlement minute (4 min before)". */
+export function timingPhrase(offsetMin) {
+  if (offsetMin == null) return 'in this settlement window';
+  if (offsetMin === 0) return 'at this exact settlement minute';
+  return `near this settlement minute (${Math.abs(offsetMin)} min ${offsetMin > 0 ? 'before' : 'after'} it)`;
+}
 export function precedentHeadline(precedents) {
   const scored = precedents.filter((p) => p.weight > 0);
   if (!scored.length) return null;
-  const lead = scored[0].pattern;
-  const others = [...new Set(scored.map((p) => p.pattern))].filter((x) => x !== lead);
-  return (HEADLINES[lead] || 'This feed has misbehaved at this exact minute before') + (others.length ? ` (and shown ${others.join(', ')} there)` : '');
+  const lead = scored[0];
+  const others = [...new Set(scored.map((p) => p.pattern))].filter((x) => x !== lead.pattern);
+  return `${HEADLINES[lead.pattern] || 'This feed has misbehaved'} before, ${timingPhrase(lead.offsetMin)}${others.length ? ` (and shown ${others.join(', ')} there)` : ''}`;
 }
 
 /**
@@ -61,7 +81,7 @@ export function classify(memories, ctx, nowMs = Date.now()) {
   const seenBlob = new Set();
   const seenEvent = new Map(); // feed|pattern|when → blobId: one real event counts once, however many times it was written
   // strongest first, so when the same event was written twice the strongest copy is the one kept (stable for ties)
-  const sevOf = (m) => { const v = Number(m.record?.severity); return Number.isFinite(v) ? v : HISTORY.missingSeverity; };
+  const sevOf = (m) => (m.record ? effectiveSeverity(m.record, ctx.calibration).value : HISTORY.missingSeverity);
   const ordered = memories.map((m, i) => ({ m, i })).sort((a, b) => sevOf(b.m) - sevOf(a.m) || a.i - b.i).map((x) => x.m);
   for (const m of ordered) {
     const rec = m.record;
@@ -79,8 +99,8 @@ export function classify(memories, ctx, nowMs = Date.now()) {
     if (t > nowMs) { out.ignored.push({ blobId: m.blobId, reason: 'in the future' }); continue; }
     const ageDays = (nowMs - t) / 86400000;
     const recency = 0.5 ** (ageDays / HISTORY.halfLifeDays);
-    const sevRaw = Number(rec.severity);
-    const sevScale = Math.min(1, (Number.isFinite(sevRaw) ? sevRaw : HISTORY.missingSeverity) / HISTORY.severityDivisor);
+    const eff = effectiveSeverity(rec, ctx.calibration);
+    const sevScale = Math.min(1, eff.value / HISTORY.severityDivisor);
     let w = sevScale * recency * (rec.simulated === 'yes' ? HISTORY.simulatedWeight : 1);
     let offset = null;
     if (ctx.settleMinuteET != null) {
@@ -89,7 +109,7 @@ export function classify(memories, ctx, nowMs = Date.now()) {
     }
     const inWindow = offset != null && offset <= HISTORY.before && offset >= -HISTORY.after;
     if (!inWindow) w *= HISTORY.otherTimeWeight;
-    const p = { blobId: m.blobId, createdAt: m.createdAt || null, when: rec.when, pattern: rec.pattern, severity: Number(rec.severity) || null, ageDays: Math.round(ageDays * 10) / 10, weight: Math.round(w * 1000) / 1000, offsetMin: offset, line: describePrecedent(rec, inWindow ? offset : null) + (inWindow ? '' : ` (at ${new Date(t).toISOString().slice(11, 16)}Z, outside the settlement window)`), text: m.text, record: rec };
+    const p = { blobId: m.blobId, createdAt: m.createdAt || null, when: rec.when, pattern: rec.pattern, severity: Math.round(eff.value * 100) / 100, severityBasis: eff.basis, ageDays: Math.round(ageDays * 10) / 10, weight: Math.round(w * 1000) / 1000, offsetMin: offset, line: describePrecedent(rec, inWindow ? offset : null) + (inWindow ? '' : ` (at ${new Date(t).toISOString().slice(11, 16)}Z, outside the settlement window)`), text: m.text, record: rec };
     (inWindow ? out.sameWindow : out.sameFeedOther).push(p);
   }
   out.sameWindow.sort((a, b) => b.weight - a.weight);
@@ -138,7 +158,7 @@ export function applyMemories(factors, memories, ctx, { nowMs = Date.now(), weig
 function explain(cls, before, after, hp) {
   if (!cls.sameWindow.length && !cls.sameFeedOther.length) return 'No past incident in Walrus Memory matches this feed, so the score is from live data only.';
   const n = cls.sameWindow.length;
-  const lead = n ? `${n} precedent${n === 1 ? '' : 's'} at this exact settlement window (${cls.sameWindow.map((p) => short(p.blobId)).join(', ')})` : 'no precedent at this settlement window';
+  const lead = n ? `${n} precedent${n === 1 ? '' : 's'} in this settlement window (${cls.sameWindow.map((p) => short(p.blobId)).join(', ')})` : 'no precedent at this settlement window';
   const other = cls.sameFeedOther.length ? ` and ${cls.sameFeedOther.length} other incident${cls.sameFeedOther.length === 1 ? '' : 's'} on this feed` : '';
   return `Walrus Memory found ${lead}${other}: the history factor adds ${hp} points (score ${before.score} → ${after.score}).`;
 }

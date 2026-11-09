@@ -20,9 +20,16 @@ function pick(name) {
 const rel = (p) => (p ? p.slice(ROOT.length + 1) : null);
 
 const NAMES = { XAU: 'Gold', XAG: 'Silver', EURUSD: 'EUR/USD' };
+// Pyth price-feed IDs (public, from Hermes) for transactions whose Walrus evidence record does not name the feed.
+const FEED_IDS = {
+  '0x765d2ba906dbc32ca17cc11f5310a89e9ee1f6420508c63861f2f8ba4ee34bb2': 'Metal.XAU/USD',
+  '0xf2fb02c32b055c805e7238d628e5e9dadef274376114eb1f012337cabe93871e': 'Metal.XAG/USD',
+  '0xa995d00bb36a63cef7fd2c287dc105fc8f3d93779f062f09551b0af3e81ec30b': 'FX.EUR/USD',
+};
 
 function memories() {
   const file = pick('memories.jsonl');
+  if (!file) return null;
   const rows = readJsonl(file).filter((m) => m.ok);
   const byNs = {};
   for (const m of rows) {
@@ -44,6 +51,7 @@ function memories() {
 
 function suiTxs() {
   const file = pick('sui-tx.jsonl');
+  if (!file) return null;
   const rows = readJsonl(file);
   // The Walrus evidence record for each digest names the feed (and is itself a blob).
   const ev = new Map();
@@ -55,13 +63,14 @@ function suiTxs() {
   const executed = rows.filter((t) => t.executed && t.ok && t.digest).map((t) => {
     const sim = [...rows].reverse().find((s) => !s.executed && s.feedId === t.feedId && Date.parse(s.at) <= Date.parse(t.at));
     const e = ev.get(t.digest) || {};
-    return { at: t.at, kind: t.kind, digest: t.digest, feedId: t.feedId, feed: e.feed || null, evidenceBlob: e.blobId || null, gasMist: t.gasMist, executedBy: t.provider, simulatedBy: sim?.simulated?.provider || sim?.provider || null };
+    return { at: t.at, kind: t.kind, digest: t.digest, feedId: t.feedId, feed: e.feed || FEED_IDS[t.feedId] || null, evidenceBlob: e.blobId || null, gasMist: t.gasMist, executedBy: t.provider, simulatedBy: sim?.simulated?.provider || sim?.provider || null };
   });
-  return { file: rel(file), simulations: rows.filter((t) => !t.executed).length, executed };
+  return { file: rel(file), simulations: rows.filter((t) => !t.executed).length, executed, allSimulatedViaTatum: executed.length > 0 && executed.every((t) => t.simulatedBy === 'tatum') };
 }
 
 function counters(name) {
   const file = pick(name);
+  if (!file) return null;
   const c = readJson(file) || {};
   const out = { file: rel(file), updated: c._updated || null, rows: [] };
   for (const [k, v] of Object.entries(c)) if (!k.startsWith('_') && typeof v === 'number') out.rows.push({ key: k, n: v });
@@ -71,6 +80,7 @@ function counters(name) {
 
 function tatum() {
   const c = counters('tatum-calls.json');
+  if (!c) return null;
   let ok = 0, quota = 0, errors = 0, pub = 0;
   for (const { key, n } of c.rows) {
     if (key.startsWith('tatum:')) { if (/:quota-error$/.test(key)) quota += n; else if (/:error$/.test(key)) errors += n; else ok += n; }
@@ -87,6 +97,7 @@ function tests() {
     const src = readFileSync(join(dir, f), 'utf8');
     return { file: `tests/${f}`, cases: (src.match(/^\s*(?:test|it)\(/gm) || []).length };
   });
+  if (!per.length) return null;
   return { files: per, cases: per.reduce((s, x) => s + x.cases, 0), note: 'test cases counted from tests/*.test.js (node --test)' };
 }
 
@@ -121,6 +132,14 @@ export function demoReport() {
   return shapeCheck(a.report, a.raw, { source: 'prebuilt', sourceFile: rel(f), cachedAt: a.raw?.at || null });
 }
 
+/** Paid agent checks (x402 on Sui): one row per verified USDC payment, from proof/agent-payments.jsonl. */
+function agentPayments() {
+  const file = pick('agent-payments.jsonl');
+  if (!file) return null;
+  const rows = readJsonl(file).filter((r) => r.digest).map((r) => ({ at: r.at, digest: r.digest, amountUsdc: r.amount_usdc, rate: r.rate, market: r.market, score: r.score, band: r.band, mode: r.mode, executedVia: r.executed_via, verifiedVia: r.verified_via, memoryBlob: r.memory_blob }));
+  return { file: rel(file), payments: rows };
+}
+
 export function state() {
   const pyth = counters('pyth-calls.json');
   return {
@@ -128,9 +147,10 @@ export function state() {
     memory: memories(),
     sui: suiTxs(),
     tatum: tatum(),
-    pyth: { ...pyth, total: pyth.rows.reduce((s, r) => s + r.n, 0) },
+    pyth: pyth ? { ...pyth, total: pyth.rows.reduce((s, r) => s + r.n, 0) } : null,
     tests: tests(),
     scan: scan(),
     beforeAfter: beforeAfter(),
+    agent: agentPayments(),
   };
 }

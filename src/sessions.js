@@ -125,6 +125,7 @@ export const LIQUIDITY = {
   BRENT: { tz: 'America/New_York', core: [[3 * 60, 14 * 60 + 30]], note: 'core 03:00–14:30 ET (London + NY overlap); later hours thin' },
   XAU: { tz: 'America/New_York', core: [[3 * 60, 13 * 60 + 30]], note: 'core 03:00–13:30 ET (London open to COMEX close); 13:30–17:00 ET and the Asian session are thin' },
   XAG: { tz: 'America/New_York', core: [[3 * 60, 13 * 60 + 25]], note: 'core 03:00–13:25 ET (London open to COMEX close); later NY afternoon and Asian hours are thin' },
+  USDJPY: { tz: 'America/New_York', core: [[19 * 60, 24 * 60], [0, 12 * 60]], note: 'core 19:00–12:00 ET (Tokyo, London, NY morning); NY afternoon thinner' },
   EURUSD: { tz: 'America/New_York', core: [[3 * 60, 12 * 60]], note: 'core 03:00–12:00 ET (London + NY overlap); NY afternoon and Asian hours thinner' },
 };
 

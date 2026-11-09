@@ -15,16 +15,18 @@ export function buildReport(r) {
   const gaps = r.gaps.length ? `Not yet checked: ${s.notMeasured.map((n) => n.factor).join(', ') || 'none'} (${r.gaps[0]}).` : '';
   const P = r.learning?.precedents || [];
   const memSentence = P.length
-    ? `Walrus Memory holds ${P.length} precedent${P.length === 1 ? '' : 's'} for this feed at this exact settlement window, e.g. "${P[0].line}" (blob ${P[0].blobId.slice(0, 8)}…); that history adds ${r.learning.changes.find((c) => c.factor === 'history')?.points ?? 0} points.`
+    ? `Walrus Memory holds ${P.length} precedent${P.length === 1 ? '' : 's'} for this feed in this settlement window, e.g. "${P[0].line}" (blob ${P[0].blobId.slice(0, 8)}…); that history adds ${r.learning.changes.find((c) => c.factor === 'history')?.points ?? 0} points.`
     : r.memory.errors.length && !r.learning?.used?.length ? `Memory not used this run: ${r.memory.errors[0]}.` : r.learning.explanation;
   const sentences = [rule, top || 'No live warning signs in the data Alibi could read.', [memSentence, gaps].filter(Boolean).join(' ')];
   return {
-    verdict: precedentHeadline(P) && !s.notMeasured.some((n) => n.factor === 'divergence')
+    // The precedent headline leads only when the score agrees (band elevated or high); otherwise it is a secondary line.
+    verdict: precedentHeadline(P) && s.band !== 'low' && !s.notMeasured.some((n) => n.factor === 'divergence')
       ? `${precedentHeadline(P)} — Settlement Risk Score ${s.score}/100 (${P.length} precedent${P.length === 1 ? '' : 's'} in Walrus Memory)`
       : s.notMeasured.some((n) => n.factor === 'divergence' || n.factor === 'spikeRevert')
       ? `Incomplete check (settlement feed not read) — partial Settlement Risk Score ${s.score}/100`
       : `${VERDICT[s.band]} — Settlement Risk Score ${s.score}/100`,
     complete: !s.notMeasured.length,
+    secondary: precedentHeadline(P) && s.band === 'low' ? `Precedent: ${precedentHeadline(P)} (${P.length} in Walrus Memory; ${P[0].line}).` : null,
     score: s.score,
     band: s.band,
     sentences,
@@ -39,7 +41,7 @@ export function buildReport(r) {
       reasons: s.reasons,
       notMeasured: s.notMeasured,
       onchain: r.onchain ? { line: onchainLine(r.onchain), notes: r.onchain.notes || [], ...r.onchain } : null,
-      precedents: P.map((p) => ({ line: p.line, blobId: p.blobId, weight: p.weight, ageDays: p.ageDays })),
+      precedents: P.map((p) => ({ line: p.line, blobId: p.blobId, weight: p.weight, ageDays: p.ageDays, severity: p.severity, severityBasis: p.severityBasis })),
       otherSameFeed: (r.learning?.otherSameFeed || []).map((p) => ({ line: p.line, blobId: p.blobId, weight: p.weight })),
       memory: { backend: r.memory.backend, recalled: r.memory.recalled, errors: r.memory.errors, before: r.learning.before.score, after: r.learning.after.score, changes: r.learning.changes, used: r.learning.used, ignored: r.learning.ignored },
       liquidityNote: r.context?.liquidityNote,
@@ -61,6 +63,7 @@ export function renderText(rep) {
   const L = [];
   L.push('='.repeat(78));
   L.push(`ALIBI  ${rep.verdict}`);
+  if (rep.secondary) L.push(`       ${rep.secondary}`);
   L.push('='.repeat(78));
   rep.sentences.forEach((x, i) => L.push(`${i + 1}. ${x}`));
   const d = rep.details;
@@ -90,7 +93,7 @@ export function renderText(rep) {
   L.push('');
   L.push('Precedents (from Walrus Memory: same feed, same settlement window)');
   if (!d.precedents?.length) L.push('  none');
-  for (const p of d.precedents || []) L.push(`  - ${p.line}  [blob ${p.blobId}]`);
+  for (const p of d.precedents || []) L.push(`  - ${p.line}  [blob ${p.blobId}]${p.severityBasis ? `  (severity ${p.severity}: ${p.severityBasis})` : ''}`);
   if (d.otherSameFeed?.length) { L.push('  Other incidents on this feed (count at 0.15 weight):'); for (const p of d.otherSameFeed) L.push(`  - ${p.line}  [blob ${p.blobId}]`); }
   L.push('');
   L.push(`Memory   backend=${d.memory.backend} recalled=${d.memory.recalled} score live-only=${d.memory.before} with history=${d.memory.after}`);

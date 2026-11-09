@@ -81,8 +81,14 @@ const inflight = new Map(); // key → { promise, listeners:Set }
 const hits = new Map(); // ip → [timestamps]
 export const LIMIT = { perIp: Number(process.env.ALIBI_RATE_PER_IP || 6), windowMs: 10 * 60 * 1000, maxConcurrent: Number(process.env.ALIBI_MAX_CONCURRENT || 2) };
 
-export function marketKey(input) {
+/** Adds https:// to bare polymarket.com links so "polymarket.com/event/…" works like a full URL. */
+export function normalizeInput(input) {
   const s = String(input || '').trim();
+  return /^(www\.)?polymarket\.com\//i.test(s) ? `https://${s}` : s;
+}
+
+export function marketKey(input) {
+  const s = normalizeInput(input);
   if (!s) return null;
   try {
     if (/^https?:\/\//i.test(s)) {

@@ -24,7 +24,7 @@ writeJson(path('results', 'last-check.json'), { report: rep, raw: { ...r, _targe
 // --before-after: same live data, scored without and with the Walrus precedents (one data pull, so no drift).
 if (flags.has('--before-after') && r.learning) {
   const strip = (x) => ({ ...x, _target: undefined, _refs: undefined, market: { ...x.market, rules: undefined } });
-  const without = { ...r, learning: applyMemories(r.factors, [], r.context, { nowMs: Date.parse(r.at) }), memory: { ...r.memory, recalled: 0, errors: ['before: Walrus precedents withheld (same live data)'] } };
+  const without = { ...r, learning: applyMemories(r.factors, [], r.context, { nowMs: Date.parse(r.at) }), memory: { ...r.memory, recalled: 0, errors: ['before: Walrus precedents withheld (same live data)'] }, dataSources: r.dataSources.map((d) => (d.name.startsWith('Walrus Memory') ? { ...d, ok: false, detail: 'withheld for the before view (same live data)' } : d)) };
   without.score = without.learning.after;
   writeJson(path('results', 'before.json'), { report: buildReport(without), raw: strip(without) });
   writeJson(path('results', 'after.json'), { report: rep, raw: strip(r) });

@@ -5,11 +5,11 @@
   "outputDirectory": "public",
   "cleanUrls": true,
   "functions": {
-    "api/check.js": { "maxDuration": 300, "memory": 1024, "includeFiles": "{src/**,proof/**,cache/rules/**}" },
+    "api/check.js": { "maxDuration": 300, "includeFiles": "{src/**,proof/**,cache/rules/**}" },
     "api/state.js": { "maxDuration": 10, "includeFiles": "{proof/**,tests/*.test.js}" },
     "api/demo.js": { "maxDuration": 10, "includeFiles": "{src/detect.js,proof/**}" },
     "api/samples.js": { "maxDuration": 15 },
-    "api/agent/check.js": { "maxDuration": 300, "memory": 1024, "includeFiles": "{src/**,proof/**,cache/rules/**}" },
+    "api/agent/check.js": { "maxDuration": 300, "includeFiles": "{src/**,proof/**,cache/rules/**}" },
     "api/agent/price.js": { "maxDuration": 30, "includeFiles": "{src/**,proof/**}" }
   },
   "headers": [

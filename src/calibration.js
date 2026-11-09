@@ -24,17 +24,19 @@ export function applyCalibration(params, cal) {
 }
 
 const pct = (x) => (x == null ? 'n/a' : `${Math.round(x * 1000) / 10}%`);
-/** Markdown table for the README: each threshold in plain words. Pure. */
+/** Markdown table for the README: each threshold in plain words, naming the population whose p99 set it. Pure. */
 export function calibrationTable(file) {
-  const rows = ['| feed | threshold | value | what it means |', '|---|---|---|---|'];
+  const rows = ['| feed | signal | Alibi flags at | what it means (90 days of real Pyth data) |', '|---|---|---|---|'];
   for (const [inst, f] of Object.entries(file?.feeds || {})) {
-    const t = f.thresholds, s = f.stats;
-    const n = s.minutes.window;
-    rows.push(`| ${inst} | confidence multiple | ≥ ${t.confRatio}× the normal band | reached on 1% of the ${n} settlement-window minutes (16:54–17:04 ET, ${f.tradingDays} trading days); ${pct(s.confMultiple.shareOfBaselineAtThreshold)} of ordinary minutes; median at the 16:59 candle is ${s.confMultiple.settleMedian}× |`);
-    rows.push(`| ${inst} | spike size | ≥ ${t.spikeBps} bps away from the prior 5-minute median | reached on 1% of settlement-window minutes (ordinary minutes: p99 ${s.excursionBps.baselineP99} bps) |`);
-    rows.push(`| ${inst} | frozen price | price unchanged for ≥ ${t.frozenRunSec} s inside a minute | reached on 1% of settlement-window minutes (ordinary p99 ${s.sameRunSec.baselineP99} s) |`);
-    rows.push(`| ${inst} | print gap | no print for ≥ ${t.staleGapSec} s | p99 of settlement-window minutes is ${s.maxPrintGapSec.windowP99} s; 5 s floor (the 1 s channel always prints) |`);
-    rows.push(`| ${inst} | divergence vs Hyperliquid | ≥ ${t.divergenceBps ?? 'n/a'} bps after basis | ${t.divergenceBps == null ? 'no Hyperliquid history' : `reached on 1% of 5-min bars around settlement since ${String(s.divergence.from).slice(0, 10)} (all bars p99 ${Math.round(s.divergence.p99 * 10) / 10} bps)`} |`);
+    const t = f.thresholds, s = f.stats, so = t.settlementOnly || {};
+    const n = s.minutes.window, b = s.minutes.baseline;
+    const from = (k, other) => (t[k] === so[k] ? `1% of the ${n} settlement-window minutes reach it (ordinary minutes: ${other})` : `1% of the ${b} ordinary minutes reach it; settlement-window minutes are calmer (their 1%: ${so[k]})`);
+    rows.push(`| ${inst} | confidence band | ≥ ${t.confRatio}× its normal width | ${from('confRatio', `${pct(s.confMultiple.shareOfBaselineAtThreshold)} reach it`)}; the 16:59 candle is typically ${s.confMultiple.settleMedian}× |`);
+    rows.push(`| ${inst} | spike | ≥ ${t.spikeBps} bps from the prior 5-min median | ${from('spikeBps', `p99 ${s.excursionBps.baselineP99} bps`)} |`);
+    rows.push(`| ${inst} | frozen price | unchanged ≥ ${t.frozenRunSec} s within a minute | ${from('frozenRunSec', `p99 ${s.sameRunSec.baselineP99} s`)}; longest seen ${s.sameRunSec.max} s |`);
+    if (t.divergenceBps == null) rows.push(`| ${inst} | divergence vs Hyperliquid | n/a | no Hyperliquid history |`);
+    else rows.push(`| ${inst} | divergence vs Hyperliquid | ≥ ${t.divergenceBps} bps after basis | ${t.divergenceBps === so.divergenceBps ? `1% of the ${s.divergence.settlementBars} 5-min bars around settlement reach it (all bars p99 ${Math.round(s.divergence.p99 * 10) / 10} bps)` : `1% of all ${s.divergence.bars5m} 5-min bars reach it (around settlement: ${so.divergenceBps} bps)`}, since ${String(s.divergence.from).slice(0, 10)} |`);
+    rows.push(`| ${inst} | print gap | ≥ ${t.staleGapSec} s without a print | never seen: the sampled channel printed every second in all ${n + b} minutes (5 s floor) |`);
   }
   return rows.join('\n');
 }

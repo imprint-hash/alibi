@@ -72,7 +72,7 @@ test('applyMemories: precedent adds its own history points, names the blob, live
   assert.ok(Math.abs(out.after.score - out.before.score - hist.points) <= 1, 'score change equals the history points (rounding)');
   assert.ok(out.after.score >= out.before.score + 10);
   assert.equal(out.precedents[0].blobId, 'd08odBwCOEO2');
-  assert.match(out.explanation, /1 precedent at this exact settlement window \(d08odBwC…\)/);
+  assert.match(out.explanation, /1 precedent in this settlement window \(d08odBwC…\)/);
   assert.equal(f.confidence.severity, 0.68, 'live factors not mutated');
   assert.equal(out.after.reasons.find((r) => r.factor === 'confidence').points, out.before.reasons.find((r) => r.factor === 'confidence').points);
 });

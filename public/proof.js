@@ -1,32 +1,31 @@
 // /proof: renders /api/state (counts read from proof/ and results/ files) as plain tables.
+// A card whose file is missing is left out, never shown with zeros.
 (() => {
   const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const rows = (list) => `<table class="rows"><tbody>${list.map(([k, v]) => `<tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('')}</tbody></table>`;
-  const src = (f, extra = '') => `<p class="src">source: ${esc(f || 'file not found')}${extra ? ' · ' + esc(extra) : ''}</p>`;
+  const src = (f, extra = '') => `<p class="src">Source: ${esc(f)}${extra ? ' · ' + esc(extra) : ''}</p>`;
+  const card = (title, file, extra, total, line, table, wide = false) =>
+    `<article class="glass pcard${wide ? ' span2' : ''}"><h2>${title}</h2>${src(file, extra)}${total != null ? `<p class="total">${esc(total)}</p>` : ''}<p>${line}</p>${table}</article>`;
   fetch('/api/state').then((r) => r.json()).then((s) => {
-    document.getElementById('gen').textContent = `read at ${s.generatedAt}`;
-    const t = s.tatum, m = s.memory, sui = s.sui;
+    document.getElementById('gen').textContent = `Read at ${s.generatedAt}`;
+    const { tatum: t, memory: m, sui, tests, pyth, scan, beforeAfter: ba, agent } = s;
     const cards = [
-      `<article class="glass pcard"><h2>Tatum Sui gRPC</h2>${src(t.file, t.updated ? `updated ${t.updated}` : '')}
-        <p class="total">${esc(t.tatumOk)}</p><p>successful calls through Tatum · ${esc(t.tatumQuotaErrors)} quota errors (HTTP 429) · ${esc(t.tatumErrors)} other errors · ${esc(t.publicFallback)} calls served by the public Sui node instead</p>
-        ${rows(t.rows.map((r) => [r.key, r.n]))}</article>`,
-      `<article class="glass pcard"><h2>Walrus Memory</h2>${src(m.file)}
-        <p class="total">${esc(m.writes)}</p><p>successful writes on ${esc(m.backends.join(', '))}, ${esc(m.incidents.length)} of them incident records</p>
-        ${rows(m.namespaces.map((n) => [n.namespace, n.misfiled ? `${n.writes} (${n.misfiled} misfiled early, rewritten)` : n.writes]))}</article>`,
-      `<article class="glass pcard"><h2>Sui mainnet transactions</h2>${src(sui.file, `${sui.simulations} simulations logged`)}
-        <p class="total">${esc(sui.executed.length)}</p><p>executed; provider as recorded</p>
-        ${rows(sui.executed.map((x) => [`${x.kind} ${x.feed || ''} ${x.digest}`, `sim ${x.simulatedBy} · exec ${x.executedBy}`]))}</article>`,
-      `<article class="glass pcard"><h2>Tests</h2>${src('tests/*.test.js', s.tests.note)}
-        <p class="total">${esc(s.tests.cases)}</p><p>test cases in ${esc(s.tests.files.length)} files</p>
-        ${rows(s.tests.files.map((f) => [f.file, f.cases]))}</article>`,
-      `<article class="glass pcard"><h2>Pyth calls</h2>${src(s.pyth.file)}
-        <p class="total">${esc(s.pyth.total)}</p><p>Pyth API calls counted by the engine</p>${rows(s.pyth.rows.map((r) => [r.key, r.n]))}</article>`,
-      s.scan ? `<article class="glass pcard"><h2>History scan</h2>${src(s.scan.file, `run ${s.scan.at}`)}
-        <p class="total">${esc(s.scan.incidents)}</p><p>incidents found in ${esc(s.scan.days)} days of Pyth history</p>
-        ${rows(s.scan.feeds.map((f) => [f.feed, `${f.incidents} incidents · ${f.candles} candles · ${f.prints} prints`]))}</article>` : '',
-      s.beforeAfter ? `<article class="glass pcard span2"><h2>Memory changes the answer</h2>${src(s.beforeAfter.files.join(', '), `same data at ${s.beforeAfter.at}`)}
-        ${rows([['without Walrus precedents', `${s.beforeAfter.before.score}/100 · ${s.beforeAfter.before.verdict}`], ['with Walrus precedents', `${s.beforeAfter.after.score}/100 · ${s.beforeAfter.after.verdict}`], ...s.beforeAfter.changes.flatMap((c) => c.memories.map((x) => [`${c.factor} ← ${x.blobId}`, `w=${x.weight}`]))])}</article>` : '',
-    ];
-    document.getElementById('grid').innerHTML = cards.join('');
+      t && card('Tatum calls', t.file, t.updated ? `updated ${t.updated}` : '', t.tatumOk,
+        `successful calls through Tatum · ${esc(t.tatumQuotaErrors)} quota errors (HTTP 429) · ${esc(t.tatumErrors)} other errors · ${esc(t.publicFallback)} calls served by the public Sui node instead`,
+        rows(t.rows.map((r) => [r.key, r.n]))),
+      m && card('Walrus Memory', m.file, '', m.writes, `successful writes on ${esc(m.backends.join(', '))}, ${esc(m.incidents.length)} of them incident records`,
+        rows(m.namespaces.map((n) => [n.namespace, n.misfiled ? `${n.writes} (${n.misfiled} misfiled early, rewritten)` : n.writes]))),
+      sui && sui.executed.length && card('Sui mainnet transactions', sui.file, `${sui.simulations} simulations logged`, sui.executed.length, 'executed, with the provider as recorded',
+        rows(sui.executed.map((x) => [`${x.kind} ${x.feed || ''} ${x.digest}`, `simulated ${x.simulatedBy || 'n/a'} · executed ${x.executedBy}`]))),
+      agent && agent.payments.length && card('Paid agent checks', agent.file, 'paid by our demo agent (agent/client.js)', agent.payments.length, 'USDC payments on Sui, verified via Tatum',
+        rows(agent.payments.map((p) => [`${p.market} ${p.digest}`, `${p.amountUsdc} USDC · score ${p.score}`]))),
+      tests && card('Tests', 'tests/*.test.js', 'run with node --test', tests.cases, `test cases in ${esc(tests.files.length)} files`, rows(tests.files.map((f) => [f.file, f.cases]))),
+      pyth && card('Pyth calls', pyth.file, '', pyth.total, 'Pyth API calls counted by the engine', rows(pyth.rows.map((r) => [r.key, r.n]))),
+      scan && card('History scan', scan.file, `run ${scan.at}`, scan.incidents, `incidents found in ${esc(scan.days)} days of Pyth history${m ? `, ${esc(m.incidents.length)} of them written to Walrus` : ''}`,
+        rows(scan.feeds.map((f) => [f.feed, `${f.incidents} incidents · ${f.candles} candles · ${f.prints} prints`]))),
+      ba && card('Memory changes the answer', ba.files.join(', '), `same data at ${ba.at}`, null, 'One data pull, scored without and with the Walrus precedents',
+        rows([['without Walrus precedents', `${ba.before.score}/100 · ${ba.before.verdict}`], ['with Walrus precedents', `${ba.after.score}/100 · ${ba.after.verdict}`], ...ba.changes.flatMap((c) => c.memories.map((x) => [`${c.factor} ← ${x.blobId}`, `weight ${x.weight}`]))]), true),
+    ].filter(Boolean);
+    document.getElementById('grid').innerHTML = cards.length ? cards.join('') : '<div class="glass pcard span2"><p>No proof files are published yet.</p></div>';
   }).catch(() => { document.getElementById('grid').innerHTML = '<div class="glass pcard span2"><p>Could not read the proof files.</p></div>'; });
 })();

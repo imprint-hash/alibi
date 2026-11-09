@@ -23,8 +23,10 @@ async function serveStatic(req, res, pathname) {
     res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream', 'cache-control': 'no-cache', 'x-content-type-options': 'nosniff' });
     res.end(await readFile(file));
   } catch {
-    res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
-    res.end('Not found');
+    let page = 'Not found';
+    try { page = await readFile(join(PUB, '404.html')); } catch {}
+    res.writeHead(404, { 'content-type': typeof page === 'string' ? 'text/plain; charset=utf-8' : TYPES['.html'], 'cache-control': 'no-cache' });
+    res.end(page);
   }
 }
 

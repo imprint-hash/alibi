@@ -212,7 +212,7 @@ export async function runCheck(input, opts = {}) {
 
   // Memory loop
   const feedFamily = map.pythPrefix || map.pythSymbol;
-  const ctx = { instrument: map.instrument, feed: final.contract.symbol, feedFamily, bucket: bucketAt(final, final.settleT, sched, map.instrument), settleMinuteET: etMinute(final.settleT * 1000), settleT: final.settleT };
+  const ctx = { instrument: map.instrument, feed: final.contract.symbol, feedFamily, bucket: bucketAt(final, final.settleT, sched, map.instrument), settleMinuteET: etMinute(final.settleT * 1000), settleT: final.settleT, calibration: calibrationFor(map.instrument) };
   out.series = { channel: target.channel, candles: target.candles.length, prints: target.prints.length };
   out._target = target; out._refs = refs; // raw, for evidence; stripped before saving
   out.context = { ...ctx, liquidityNote: LIQUIDITY[map.instrument]?.note };
@@ -232,6 +232,10 @@ export async function runCheck(input, opts = {}) {
     }
   } else out.memory.errors.push('memory disabled for this run');
   out.learning = applyMemories(factors, memories, ctx, { nowMs: nowSec * 1000, memorySearched: searched });
+  // Every source the report used, including Sui (via Tatum) and Walrus Memory.
+  const oc = out.onchain;
+  out.dataSources.push({ name: 'Sui on-chain Pyth record (Tatum gRPC)', ok: !!oc?.ok, detail: oc?.ok ? `object ${oc.objectId.slice(0, 10)}… v${oc.version}, ${oc.ageMin} min old, ${oc.status} (served by ${oc.provider})` : oc?.error || 'not read' });
+  out.dataSources.push({ name: 'Walrus Memory (mainnet recall)', ok: searched, detail: searched ? `${out.memory.recalled} recalled · ${out.learning.precedents.length} precedent(s) for this feed and window · ${out.learning.ignored.length} ignored` : out.memory.errors[0] || 'not searched' });
   out.score = out.learning.after;
   return out;
 }

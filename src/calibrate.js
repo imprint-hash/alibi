@@ -115,18 +115,25 @@ export function deriveThresholds({ settle, around, baseline, divergence }) {
   const exc = win.map((m) => m.excursionBps);
   const gaps = win.map((m) => m.maxGapSec);
   const runs = win.map((m) => m.sameRunSec);
+  // Settlement-window p99s describe the settlement minutes; the detectors scan every minute of a window, so the
+  // detector threshold is the higher of the settlement-window p99 and the ordinary-minute p99 (never noisier than 1%).
+  const settleConf = q(winMult, 0.99), baseConfP = q(baseMult, 0.99);
+  const settleExc = q(exc, 0.99), baseExc = q(baseline.map((m) => m.excursionBps), 0.99);
+  const settleRun = q(runs, 0.99), baseRun = q(baseline.map((m) => m.sameRunSec), 0.99);
+  const settleDiv = divergence?.settleP99, allDiv = divergence?.p99;
   const t = {
-    confRatio: round(q(winMult, 0.99), 2),
-    spikeBps: round(q(exc, 0.99), 1),
+    confRatio: round(Math.max(settleConf ?? 0, baseConfP ?? 0) || null, 2),
+    spikeBps: round(Math.max(settleExc ?? 0, baseExc ?? 0) || null, 1),
     staleGapSec: round(Math.max(5, q(gaps, 0.99) ?? 5), 1),
-    frozenRunSec: round(q(runs, 0.99), 1),
-    divergenceBps: divergence?.settleP99 != null ? round(divergence.settleP99, 1) : null,
+    frozenRunSec: round(Math.max(settleRun ?? 0, baseRun ?? 0) || null, 1),
+    divergenceBps: settleDiv != null ? round(Math.max(settleDiv, allDiv ?? 0), 1) : null,
+    settlementOnly: { confRatio: round(settleConf, 2), spikeBps: round(settleExc, 1), frozenRunSec: round(settleRun, 1), divergenceBps: settleDiv != null ? round(settleDiv, 1) : null },
   };
   const stats = {
     minutes: { settlement: settle.length, window: win.length, baseline: baseline.length },
     baselineMedianConfBps: round(baseConf, 3),
-    confMultiple: { settleMedian: round(q(settleMult, 0.5), 2), windowP90: round(q(winMult, 0.9), 2), windowP99: t.confRatio, baselineP99: round(q(baseMult, 0.99), 2), shareOfBaselineAtThreshold: round(shareAtOrAbove(baseMult, t.confRatio), 4) },
-    excursionBps: { windowP50: round(q(exc, 0.5), 1), windowP99: t.spikeBps, baselineP99: round(q(baseline.map((m) => m.excursionBps), 0.99), 1), max: round(q(exc, 1), 1) },
+    confMultiple: { settleMedian: round(q(settleMult, 0.5), 2), windowP90: round(q(winMult, 0.9), 2), windowP99: round(settleConf, 2), baselineP99: round(q(baseMult, 0.99), 2), shareOfBaselineAtThreshold: round(shareAtOrAbove(baseMult, t.confRatio), 4) },
+    excursionBps: { windowP50: round(q(exc, 0.5), 1), windowP99: round(settleExc, 1), baselineP99: round(q(baseline.map((m) => m.excursionBps), 0.99), 1), max: round(q(exc, 1), 1) },
     maxPrintGapSec: { windowP50: round(q(gaps, 0.5), 2), windowP99: round(q(gaps, 0.99), 2), max: round(q(gaps, 1), 2) },
     sameRunSec: { windowP50: round(q(runs, 0.5), 1), windowP99: round(q(runs, 0.99), 1), baselineP99: round(q(baseline.map((m) => m.sameRunSec), 0.99), 1), max: round(q(runs, 1), 1) },
     missingSettlementCandles: settle.filter((m) => m.missingCandle).length,
@@ -168,6 +175,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     result.outliers.push(...strongOutliers(sym, map, data, thresholds));
     log(`${map.instrument}: ${JSON.stringify(thresholds)}`);
   }
+  // merge: a run for some feeds keeps the others already in proof/calibration.json
+  const prev = readJson(path('proof', 'calibration.json'), null);
+  if (prev?.feeds) { result.feeds = { ...prev.feeds, ...result.feeds }; result.outliers = [...(prev.outliers || []).filter((o) => !feeds.includes(o.instrument)), ...result.outliers]; }
   writeJson(path('proof', 'calibration.json'), result);
   console.log(JSON.stringify(result, null, 2));
 }

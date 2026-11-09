@@ -138,7 +138,7 @@ test('verification mock (transaction mode): signature checked, simulated, then e
     getTransaction: async () => ({ Transaction: good }),
   };
   const read = async (method, fn) => { calls.push(method); return { value: await fn(client), provider: 'tatum' }; };
-  const v = await pay.verifyPayment({ mode: 'transaction', transaction: toBase64(bytes), signature, nonce }, { read, now: NOW + 1000, ...opts });
+  const v = await pay.verifyPayment({ mode: 'transaction', transaction: toBase64(bytes), signature, nonce }, { read, now: NOW + 1000, clock: () => NOW + 2000, ...opts });
   assert.equal(v.payer, sender);
   assert.deepEqual(calls, ['core.simulateTransaction'], 'nothing executes before the work is done');
   const done = await v.settle();

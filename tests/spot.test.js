@@ -120,3 +120,15 @@ test('staleness ignores gaps between sampled print windows; confidenceAt summari
   assert.equal(c.minPublishers, 15);
   assert.equal(c.maxConfBps, 10);
 });
+
+test('USD/JPY: parsed like EUR/USD (reference day, 16:59 ET), thin Hyperliquid reference, 17:00→17:00 ET plan', async () => {
+  const { PYTH_CODES } = await import('../src/rules.js');
+  const s = parseRulesDeterministic(M['usdjpy-up-or-down-on-november-9-2026']);
+  assert.deepEqual([s.pythCode, s.instrument, s.kind, s.closeCandleET, s.tieRule, s.priorDayRule], ['FX.USD/JPY', 'USDJPY', 'close-vs-prior-close', '16:59', '50-50', 'reference-day']);
+  assert.equal(PYTH_CODES['FX.USD/JPY'].hlCoin, 'xyz:JPY');
+  assert.equal(PYTH_CODES['FX.USD/JPY'].hlThin, true);
+  const jpy = P.feedBySymbol(SYM, 'FX.USD/JPY');
+  const plan = settlementPlan(s, [jpy], {}, Date.parse('2026-11-09T12:00:00Z') / 1000);
+  assert.equal(iso(plan.sessions[0].settleT), '2026-11-09T21:59:00.000Z');
+  assert.equal(S.liquidityState(S.parseSchedule(jpy.schedule), 'USDJPY', Date.parse('2026-11-10T02:00:00Z')), 'core'); // Tokyo
+});

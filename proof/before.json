@@ -1,12 +1,12 @@
 {
   "report": {
-    "verdict": "Settlement price looks clean so far — Settlement Risk Score 18/100",
+    "verdict": "Settlement price looks clean so far — Settlement Risk Score 13/100",
     "complete": true,
-    "score": 18,
+    "score": 13,
     "band": "low",
     "sentences": [
       "This market settles on the Close of one 1-minute candle vs the same candle on the prior trading day, read from Pyth Metal.XAU/USD at 2026-11-09 21:59Z (the candle timestamped 16:59 ET on 2026-11-09).",
-      "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity. Pyth confidence blew out to 8× its normal width (3.3 bps).",
+      "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity. Price is +124.8 bps from the $4070.442 line (1.51 typical moves).",
       "Memory not used this run: before: Walrus precedents withheld (same live data)."
     ],
     "details": {
@@ -17,11 +17,11 @@
         "outcomes": [
           {
             "name": "Up",
-            "price": 0.83
+            "price": 0.96
           },
           {
             "name": "Down",
-            "price": 0.17
+            "price": 0.04
           }
         ]
       },
@@ -74,7 +74,7 @@
       ],
       "dataWindow": {
         "from": "2026-11-08 23:00Z",
-        "to": "2026-11-09 12:08Z",
+        "to": "2026-11-09 16:23Z",
         "mode": "live-window"
       },
       "dataSources": [
@@ -86,12 +86,12 @@
         {
           "name": "Pyth Metal.XAU/USD (settlement feed)",
           "ok": true,
-          "detail": "970 1m candles + 6216 prints (21 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
+          "detail": "1225 1m candles + 7400 prints (25 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
         },
         {
           "name": "Hyperliquid xyz:GOLD",
           "ok": true,
-          "detail": "3910 1m candles",
+          "detail": "4165 1m candles",
           "independent": true
         }
       ],
@@ -104,25 +104,25 @@
           "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
         },
         {
-          "factor": "confidence",
-          "severity": 0.8,
-          "weight": 8,
-          "points": 6.4,
-          "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+          "factor": "distance",
+          "severity": 0.37,
+          "weight": 12,
+          "points": 4.4,
+          "text": "Price is +124.8 bps from the $4070.442 line (1.51 typical moves)."
         },
         {
-          "factor": "distance",
-          "severity": 0.38,
-          "weight": 12,
-          "points": 4.6,
-          "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+          "factor": "divergence",
+          "severity": 0.08,
+          "weight": 20,
+          "points": 1.6,
+          "text": "Settlement feed vs Hyperliquid xyz:GOLD: +8.2 bps at its widest (after removing the normal basis)."
         }
       ],
       "notMeasured": [],
       "onchain": {
-        "line": "On-chain record (Sui, via Tatum): price 4100.969 ± 0.32 at 2026-11-09 07:28:11Z, 280.7 min old; matches what Pyth published at that second (0 bps); -19.4 bps vs live Pyth. Object 0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de v1078223512, checkpoint 343353304.",
+        "line": "On-chain record (Sui, via Tatum): price 4100.969 ± 0.32 at 2026-11-09 07:28:11Z, 535.7 min old; matches what Pyth published at that second (0 bps); -47.5 bps vs live Pyth. Object 0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de v1078223512, checkpoint 343416561.",
         "notes": [
-          "On-chain copy is 280.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 280.7 min old."
+          "On-chain copy is 535.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 535.7 min old."
         ],
         "feed": "Metal.XAU/USD",
         "objectId": "0xc6b647404252bf4ab0668301d00af86ba6069f12a4b3754a1d73072543d3f2de",
@@ -131,7 +131,7 @@
           "tatum"
         ],
         "tatumCalls": 2,
-        "checkpoint": "343353304",
+        "checkpoint": "343416561",
         "epoch": "1306",
         "version": "1078223512",
         "ok": true,
@@ -139,9 +139,9 @@
         "conf": 0.32,
         "confBps": 0.78,
         "publishTime": 1794209291,
-        "ageMin": 280.7,
-        "vsLiveBps": -19.4,
-        "livePublishTime": 1794226174,
+        "ageMin": 535.7,
+        "vsLiveBps": -47.5,
+        "livePublishTime": 1794241472,
         "vsSameSecondBps": 0,
         "status": "matches",
         "provider": "tatum"
@@ -154,8 +154,8 @@
         "errors": [
           "before: Walrus precedents withheld (same live data)"
         ],
-        "before": 18,
-        "after": 18,
+        "before": 13,
+        "after": 13,
         "changes": [],
         "used": [],
         "ignored": []
@@ -165,7 +165,7 @@
   },
   "raw": {
     "input": "xauusd-up-or-down-on-november-9-2026",
-    "at": "2026-11-09T12:08:50.000Z",
+    "at": "2026-11-09T16:23:53.000Z",
     "dataSources": [
       {
         "name": "Pyth symbol metadata (public)",
@@ -175,12 +175,12 @@
       {
         "name": "Pyth Metal.XAU/USD (settlement feed)",
         "ok": true,
-        "detail": "970 1m candles + 6216 prints (21 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
+        "detail": "1225 1m candles + 7400 prints (25 sampled 60s windows) via pyth-history-api (fixed_rate@200ms)"
       },
       {
         "name": "Hyperliquid xyz:GOLD",
         "ok": true,
-        "detail": "3910 1m candles",
+        "detail": "4165 1m candles",
         "independent": true
       }
     ],
@@ -198,22 +198,22 @@
       "outcomes": [
         {
           "name": "Up",
-          "price": 0.83
+          "price": 0.96
         },
         {
           "name": "Down",
-          "price": 0.17
+          "price": 0.04
         }
       ],
-      "bestBid": 0.82,
-      "bestAsk": 0.84,
-      "lastTradePrice": 0.85,
-      "volume": 2832.4548830000003,
+      "bestBid": 0.94,
+      "bestAsk": 0.98,
+      "lastTradePrice": 0.912,
+      "volume": 3527.954248,
       "threshold": null,
       "conditionId": "0xa43d21780d03e64a0cce5459f52e920c1e12183bfbb55c11827e09082def973b",
       "eventSlug": "xauusd-up-or-down-on-november-9-2026",
       "url": "https://polymarket.com/event/xauusd-up-or-down-on-november-9-2026/xauusd-up-or-down-on-november-9-2026",
-      "fetchedAt": "2026-11-09T12:08:54.085Z"
+      "fetchedAt": "2026-11-09T16:23:54.510Z"
     },
     "spec": {
       "source": "pyth",
@@ -308,7 +308,7 @@
     },
     "dataWindow": {
       "from": 1794178800,
-      "to": 1794226130,
+      "to": 1794241433,
       "mode": "live-window"
     },
     "priorSession": {
@@ -318,10 +318,17 @@
       "settleT": 1794002340
     },
     "params": {
-      "median1mRangeBps": 3.8,
-      "spikeBps": 23,
-      "divergenceFloorBps": 10,
-      "divergenceFullBps": 60
+      "median1mRangeBps": 4,
+      "spikeBps": 16.6,
+      "divergenceFloorBps": 6.6,
+      "divergenceFullBps": 26.4,
+      "confRatio": 23.9,
+      "confFullRatio": 71.69999999999999,
+      "calibrated": {
+        "source": "proof/calibration.json",
+        "generatedAt": "2026-11-09T16:20:08.702Z",
+        "days": 90
+      }
     },
     "factors": {
       "divergence": {
@@ -330,22 +337,100 @@
           {
             "name": "Hyperliquid xyz:GOLD",
             "independent": true,
-            "n": 789,
+            "n": 1044,
             "maxAbsBps": 8.2,
             "at": 1794198720,
             "atSettleBps": null,
             "basisRatio": 0.9996066862604973,
-            "p95AbsBps": 3.5
+            "p95AbsBps": 3.6
           }
         ],
         "best": "Hyperliquid xyz:GOLD",
         "headlineBps": 8.2,
         "atSettle": false,
-        "severity": 0
+        "severity": 0.0808080808080808
       },
       "spikeRevert": {
         "measured": true,
-        "events": [],
+        "events": [
+          {
+            "t": 1794183600,
+            "dir": "down",
+            "sizeBps": 19.1,
+            "base": 4074.089,
+            "extreme": 4066.313,
+            "revertedAfterMin": 4,
+            "refMoveBps": 21.3,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          },
+          {
+            "t": 1794185340,
+            "dir": "down",
+            "sizeBps": 20.5,
+            "base": 4099.41,
+            "extreme": 4091.009,
+            "revertedAfterMin": 1,
+            "refMoveBps": 15.6,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          },
+          {
+            "t": 1794186660,
+            "dir": "up",
+            "sizeBps": 17.4,
+            "base": 4103.767,
+            "extreme": 4110.905,
+            "revertedAfterMin": 4,
+            "refMoveBps": 16.6,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          },
+          {
+            "t": 1794190020,
+            "dir": "up",
+            "sizeBps": 18.1,
+            "base": 4126.102,
+            "extreme": 4133.567,
+            "revertedAfterMin": 3,
+            "refMoveBps": 15.3,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          },
+          {
+            "t": 1794228600,
+            "dir": "up",
+            "sizeBps": 19.7,
+            "base": 4116.331,
+            "extreme": 4124.427,
+            "revertedAfterMin": 3,
+            "refMoveBps": 17,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          },
+          {
+            "t": 1794228660,
+            "dir": "up",
+            "sizeBps": 17.3,
+            "base": 4116.331,
+            "extreme": 4123.445,
+            "revertedAfterMin": 2,
+            "refMoveBps": 15.5,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          },
+          {
+            "t": 1794235020,
+            "dir": "down",
+            "sizeBps": 24.6,
+            "base": 4123.867,
+            "extreme": 4113.717,
+            "revertedAfterMin": 3,
+            "refMoveBps": 21.8,
+            "ref": "Hyperliquid xyz:GOLD",
+            "isolated": false
+          }
+        ],
         "isolatedCount": 0,
         "worst": null,
         "severity": 0
@@ -368,29 +453,8 @@
         "worstConfBps": 3.3,
         "worstAt": 1794185992.8,
         "ratio": 8,
-        "events": [
-          {
-            "t": 1794185992.6,
-            "ratio": 6.2,
-            "confBps": 2.6
-          },
-          {
-            "t": 1794185992.8,
-            "ratio": 8,
-            "confBps": 3.3
-          },
-          {
-            "t": 1794211169.6,
-            "ratio": 4,
-            "confBps": 1.7
-          },
-          {
-            "t": 1794211170,
-            "ratio": 4.1,
-            "confBps": 1.7
-          }
-        ],
-        "severity": 0.7986207069572571,
+        "events": [],
+        "severity": 0,
         "atSettle": null
       },
       "thin": {
@@ -406,15 +470,15 @@
       },
       "distance": {
         "measured": true,
-        "price": 4108.662,
+        "price": 4121.258,
         "threshold": 4070.442,
-        "distanceBps": 93.9,
+        "distanceBps": 124.8,
         "yesSideNow": true,
-        "typical1mRangeBps": 2.7,
-        "typicalMoveBps": 65.2,
-        "movesAway": 1.44,
+        "typical1mRangeBps": 4.5,
+        "typicalMoveBps": 82.7,
+        "movesAway": 1.51,
         "glitchCouldFlip": false,
-        "severity": 0.3825835069891384,
+        "severity": 0.36559586924292076,
         "priceSource": "Metal.XAU/USD",
         "proxy": false,
         "thresholdNote": "prior close 2026-11-06 (Pyth candle 21:59Z)"
@@ -428,7 +492,7 @@
         "tatum"
       ],
       "tatumCalls": 2,
-      "checkpoint": "343353304",
+      "checkpoint": "343416561",
       "epoch": "1306",
       "version": "1078223512",
       "ok": true,
@@ -436,20 +500,20 @@
       "conf": 0.32,
       "confBps": 0.78,
       "publishTime": 1794209291,
-      "ageMin": 280.7,
-      "vsLiveBps": -19.4,
-      "livePublishTime": 1794226174,
+      "ageMin": 535.7,
+      "vsLiveBps": -47.5,
+      "livePublishTime": 1794241472,
       "vsSameSecondBps": 0,
       "notes": [
-        "On-chain copy is 280.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 280.7 min old."
+        "On-chain copy is 535.7 min old: Sui contracts that read it without posting a fresh update first are refused (stale_price_threshold 60 s) or, with unsafe reads, get a price 535.7 min old."
       ],
       "status": "matches",
       "provider": "tatum"
     },
     "series": {
       "channel": "fixed_rate@200ms",
-      "candles": 970,
-      "prints": 6216
+      "candles": 1225,
+      "prints": 7400
     },
     "context": {
       "instrument": "XAU",
@@ -458,6 +522,22 @@
       "bucket": "session-close",
       "settleMinuteET": 1019,
       "settleT": 1794261540,
+      "calibration": {
+        "confRatio": 23.9,
+        "spikeBps": 16.6,
+        "staleGapSec": 5,
+        "frozenRunSec": 8,
+        "divergenceBps": 6.6,
+        "settlementOnly": {
+          "confRatio": 23.9,
+          "spikeBps": 8.7,
+          "frozenRunSec": 8,
+          "divergenceBps": 5.8
+        },
+        "source": "proof/calibration.json",
+        "generatedAt": "2026-11-09T16:20:08.702Z",
+        "days": 90
+      },
       "liquidityNote": "core 03:00–13:30 ET (London open to COMEX close); 13:30–17:00 ET and the Asian session are thin"
     },
     "memory": {
@@ -469,7 +549,7 @@
     },
     "learning": {
       "before": {
-        "score": 18,
+        "score": 13,
         "band": "low",
         "reasons": [
           {
@@ -480,24 +560,24 @@
             "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
           },
           {
-            "factor": "confidence",
-            "severity": 0.8,
-            "weight": 8,
-            "points": 6.4,
-            "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+            "factor": "distance",
+            "severity": 0.37,
+            "weight": 12,
+            "points": 4.4,
+            "text": "Price is +124.8 bps from the $4070.442 line (1.51 typical moves)."
           },
           {
-            "factor": "distance",
-            "severity": 0.38,
-            "weight": 12,
-            "points": 4.6,
-            "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+            "factor": "divergence",
+            "severity": 0.08,
+            "weight": 20,
+            "points": 1.6,
+            "text": "Settlement feed vs Hyperliquid xyz:GOLD: +8.2 bps at its widest (after removing the normal basis)."
           }
         ],
         "notMeasured": []
       },
       "after": {
-        "score": 18,
+        "score": 13,
         "band": "low",
         "reasons": [
           {
@@ -508,18 +588,18 @@
             "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
           },
           {
-            "factor": "confidence",
-            "severity": 0.8,
-            "weight": 8,
-            "points": 6.4,
-            "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+            "factor": "distance",
+            "severity": 0.37,
+            "weight": 12,
+            "points": 4.4,
+            "text": "Price is +124.8 bps from the $4070.442 line (1.51 typical moves)."
           },
           {
-            "factor": "distance",
-            "severity": 0.38,
-            "weight": 12,
-            "points": 4.6,
-            "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+            "factor": "divergence",
+            "severity": 0.08,
+            "weight": 20,
+            "points": 1.6,
+            "text": "Settlement feed vs Hyperliquid xyz:GOLD: +8.2 bps at its widest (after removing the normal basis)."
           }
         ],
         "notMeasured": []
@@ -542,7 +622,7 @@
       "explanation": "No past incident in Walrus Memory matches this feed, so the score is from live data only."
     },
     "score": {
-      "score": 18,
+      "score": 13,
       "band": "low",
       "reasons": [
         {
@@ -553,18 +633,18 @@
           "text": "Settlement minute falls in thin hours; 54% of the open window is outside core liquidity."
         },
         {
-          "factor": "confidence",
-          "severity": 0.8,
-          "weight": 8,
-          "points": 6.4,
-          "text": "Pyth confidence blew out to 8× its normal width (3.3 bps)."
+          "factor": "distance",
+          "severity": 0.37,
+          "weight": 12,
+          "points": 4.4,
+          "text": "Price is +124.8 bps from the $4070.442 line (1.51 typical moves)."
         },
         {
-          "factor": "distance",
-          "severity": 0.38,
-          "weight": 12,
-          "points": 4.6,
-          "text": "Price is +93.9 bps from the $4070.442 line (1.44 typical moves)."
+          "factor": "divergence",
+          "severity": 0.08,
+          "weight": 20,
+          "points": 1.6,
+          "text": "Settlement feed vs Hyperliquid xyz:GOLD: +8.2 bps at its widest (after removing the normal basis)."
         }
       ],
       "notMeasured": []

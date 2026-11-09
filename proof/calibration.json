@@ -1,53 +1,187 @@
 {
-  "generatedAt": "2026-11-09T12:59:35.006Z",
-  "days": 5,
+  "generatedAt": "2026-11-09T16:20:08.702Z",
+  "days": 90,
   "window": "16:59 ET ±5 min",
   "printChannel": "fixed_rate@1000ms",
   "rule": "threshold = p99 of settlement-window minutes (16:54–17:04 ET); flag at or above it",
   "feeds": {
     "XAU": {
       "symbol": "Metal.XAU/USD",
-      "tradingDays": 3,
+      "tradingDays": 64,
+      "daysMissing": [],
       "thresholds": {
-        "confRatio": 21.91,
-        "spikeBps": 8.4,
+        "confRatio": 23.9,
+        "spikeBps": 16.6,
         "staleGapSec": 5,
-        "divergenceBps": 5.8
+        "frozenRunSec": 8,
+        "divergenceBps": 6.6,
+        "settlementOnly": {
+          "confRatio": 23.9,
+          "spikeBps": 8.7,
+          "frozenRunSec": 8,
+          "divergenceBps": 5.8
+        }
       },
       "stats": {
         "minutes": {
-          "settlement": 3,
-          "window": 18,
-          "baseline": 9
+          "settlement": 63,
+          "window": 378,
+          "baseline": 126
         },
-        "baselineMedianConfBps": 0.488,
+        "baselineMedianConfBps": 0.381,
         "confMultiple": {
-          "settleMedian": 2.51,
-          "windowP90": 21.9,
-          "windowP99": 21.91,
-          "baselineP99": 1.28,
+          "settleMedian": 2.47,
+          "windowP90": 3.09,
+          "windowP99": 23.9,
+          "baselineP99": 2.65,
           "shareOfBaselineAtThreshold": 0
         },
         "excursionBps": {
-          "windowP50": 2.7,
-          "windowP99": 8.4,
-          "baselineP99": 13.2,
-          "max": 8.4
+          "windowP50": 2.3,
+          "windowP99": 8.7,
+          "baselineP99": 16.6,
+          "max": 10.3
         },
         "maxPrintGapSec": {
           "windowP50": 1,
           "windowP99": 1,
           "max": 1
         },
+        "sameRunSec": {
+          "windowP50": 2,
+          "windowP99": 8,
+          "baselineP99": 3,
+          "max": 19
+        },
         "missingSettlementCandles": 0,
         "divergence": {
-          "from": "2026-11-04T12:55:00.000Z",
-          "bars5m": 829,
-          "settlementBars": 6,
-          "p50": 1.861335666821784,
-          "p99": 7.290496661795931,
+          "from": "2026-10-23T07:30:00.000Z",
+          "bars5m": 3131,
+          "settlementBars": 22,
+          "p50": 1.5003122184897855,
+          "p99": 6.6482371171860954,
           "settleP99": 5.753036104959586,
           "settleMax": 5.753036104959586
+        }
+      }
+    },
+    "XAG": {
+      "symbol": "Metal.XAG/USD",
+      "tradingDays": 64,
+      "daysMissing": [],
+      "thresholds": {
+        "confRatio": 3.11,
+        "spikeBps": 34.7,
+        "staleGapSec": 5,
+        "frozenRunSec": 16,
+        "divergenceBps": 10.6,
+        "settlementOnly": {
+          "confRatio": 3.11,
+          "spikeBps": 19.6,
+          "frozenRunSec": 16,
+          "divergenceBps": 10.6
+        }
+      },
+      "stats": {
+        "minutes": {
+          "settlement": 63,
+          "window": 378,
+          "baseline": 126
+        },
+        "baselineMedianConfBps": 1.709,
+        "confMultiple": {
+          "settleMedian": 1.15,
+          "windowP90": 2.11,
+          "windowP99": 3.11,
+          "baselineP99": 1.88,
+          "shareOfBaselineAtThreshold": 0
+        },
+        "excursionBps": {
+          "windowP50": 3.8,
+          "windowP99": 19.6,
+          "baselineP99": 34.7,
+          "max": 25.2
+        },
+        "maxPrintGapSec": {
+          "windowP50": 1,
+          "windowP99": 1,
+          "max": 1
+        },
+        "sameRunSec": {
+          "windowP50": 3,
+          "windowP99": 16,
+          "baselineP99": 6,
+          "max": 19
+        },
+        "missingSettlementCandles": 0,
+        "divergence": {
+          "from": "2026-10-23T04:25:00.000Z",
+          "bars5m": 3168,
+          "settlementBars": 22,
+          "p50": 1.4261863326625601,
+          "p99": 9.248585307941593,
+          "settleP99": 10.588710531731493,
+          "settleMax": 10.588710531731493
+        }
+      }
+    },
+    "EURUSD": {
+      "symbol": "FX.EUR/USD",
+      "tradingDays": 64,
+      "daysMissing": [],
+      "thresholds": {
+        "confRatio": 21.02,
+        "spikeBps": 4.6,
+        "staleGapSec": 5,
+        "frozenRunSec": 46,
+        "divergenceBps": 4.3,
+        "settlementOnly": {
+          "confRatio": 21.02,
+          "spikeBps": 3.9,
+          "frozenRunSec": 46,
+          "divergenceBps": 3.9
+        }
+      },
+      "stats": {
+        "minutes": {
+          "settlement": 64,
+          "window": 639,
+          "baseline": 128
+        },
+        "baselineMedianConfBps": 0.178,
+        "confMultiple": {
+          "settleMedian": 2.01,
+          "windowP90": 13.52,
+          "windowP99": 21.02,
+          "baselineP99": 11.95,
+          "shareOfBaselineAtThreshold": 0
+        },
+        "excursionBps": {
+          "windowP50": 0.8,
+          "windowP99": 3.9,
+          "baselineP99": 4.6,
+          "max": 4.9
+        },
+        "maxPrintGapSec": {
+          "windowP50": 1,
+          "windowP99": 1,
+          "max": 1
+        },
+        "sameRunSec": {
+          "windowP50": 10,
+          "windowP99": 46,
+          "baselineP99": 34,
+          "max": 59
+        },
+        "missingSettlementCandles": 0,
+        "divergence": {
+          "from": "2026-10-23T04:20:00.000Z",
+          "bars5m": 3301,
+          "settlementBars": 30,
+          "p50": 1.084291644198876,
+          "p99": 4.312155093855186,
+          "settleP99": 3.9339674526583934,
+          "settleMax": 3.9339674526583934
         }
       }
     }

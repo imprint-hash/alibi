@@ -116,7 +116,12 @@ export function shapeCheck(rep, raw, meta = {}) {
       checkpoint: oc.checkpoint || null, price: oc.price ?? null, conf: oc.conf ?? null, publishTime: iso(oc.publishTime), ageMin: oc.ageMin ?? null,
       vsLiveBps: oc.vsLiveBps ?? null, vsSameSecondBps: oc.vsSameSecondBps ?? null, status: oc.status || null, feed: oc.feed || null,
     } : null,
-    sources: (d.dataSources || []).map((s) => ({ name: s.name, ok: s.ok, detail: s.detail, independent: !!s.independent })),
+    sources: [
+      ...(d.dataSources || []).map((s) => ({ name: s.name, ok: s.ok, detail: s.detail, independent: !!s.independent })),
+      // Display-side rows for the two reads the engine reports elsewhere in the check
+      ...(oc && !(d.dataSources || []).some((x) => /sui/i.test(x.name)) ? [{ name: `Sui mainnet via ${oc.provider === 'tatum' ? 'Tatum gRPC' : oc.provider || 'Tatum gRPC'}`, ok: !!oc.ok, detail: oc.ok ? `Pyth PriceInfoObject ${oc.objectId ? oc.objectId.slice(0, 10) + '…' : ''} read in ${oc.tatumCalls ?? '?'} call(s) at checkpoint ${oc.checkpoint ?? 'n/a'}` : oc.error || 'not read', independent: false }] : []),
+      ...(d.memory && !(d.dataSources || []).some((x) => /walrus/i.test(x.name)) ? [{ name: `Walrus Memory (${d.memory.backend || 'n/a'})`, ok: !(d.memory.errors || []).length || (d.memory.recalled ?? 0) > 0, detail: `${d.memory.recalled ?? 0} memories recalled, ${(d.precedents || []).length} on this feed at its settlement window${(d.memory.errors || []).length ? `; note: ${d.memory.errors[0]}` : ''}`, independent: false }] : []),
+    ],
     dataWindow: d.dataWindow || null,
     liquidityNote: d.liquidityNote || null,
     ...meta,

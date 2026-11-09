@@ -1,7 +1,7 @@
 // HTTP handlers shared by server.js (node:http) and the Vercel functions in api/.
 // Responses carry report data only: no env, no keys, no wallet.
 import { state, demoReport } from './data.js';
-import { runLive, marketKey, rateCheck, cached, redact, STAGES, LIMIT } from './live.js';
+import { runLive, marketKey, normalizeInput, rateCheck, cached, redact, STAGES, LIMIT } from './live.js';
 import { samples } from './samples.js';
 
 const json = (res, code, body, extra = {}) => {
@@ -15,10 +15,12 @@ export function clientIp(req) {
 }
 
 async function readBody(req) {
-  if (req.body !== undefined) return typeof req.body === 'string' ? safeParse(req.body) : req.body; // Vercel pre-parses
-  let s = '';
-  for await (const c of req) { s += c; if (s.length > 4096) break; }
-  return safeParse(s);
+  try {
+    if (req.body !== undefined) return typeof req.body === 'string' ? safeParse(req.body) : req.body || {}; // Vercel pre-parses
+    let s = '';
+    for await (const c of req) { s += c; if (s.length > 4096) break; }
+    return safeParse(s);
+  } catch { return {}; }
 }
 const safeParse = (s) => { try { return JSON.parse(s || '{}'); } catch { return {}; } };
 
@@ -42,9 +44,10 @@ export async function handleSamples(req, res) {
 export async function handleCheck(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'POST {"url": "<polymarket link>"}' }, { allow: 'POST' });
   const body = await readBody(req);
-  const input = String(body?.url || '').trim();
+  const input = normalizeInput(body?.url);
+  if (!input) return json(res, 400, { error: 'Paste a Polymarket market link first.' });
   const key = marketKey(input);
-  if (!key) return json(res, 400, { error: 'Paste a polymarket.com market link (or its slug).' });
+  if (!key) return json(res, 400, { error: 'That does not look like a polymarket.com market link or slug.' });
 
   const hit = cached(key);
   if (hit) return json(res, 200, { type: 'result', result: { ...hit.result, source: 'cache', cachedAt: new Date(hit.at).toISOString() } });

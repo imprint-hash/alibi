@@ -84,7 +84,7 @@ export function paymentRequired({ resourceUrl, payer = null, history = null, err
   return {
     x402Version: 2,
     error: error || 'X-PAYMENT header is required',
-    resource: { url: resourceUrl, description: 'One Alibi settlement check of a Polymarket market (Pyth gold/silver), JSON report', mimeType: 'application/json' },
+    resource: { url: resourceUrl, description: 'One Alibi settlement check of a Pyth-settled Polymarket market (gold, silver, EUR/USD or USD/JPY), JSON report', mimeType: 'application/json' },
     accepts: [{
       scheme: SCHEME,
       network: NETWORK,
@@ -199,7 +199,7 @@ async function readTx(digest, read) {
  * mode) and confirms the executed tx through Tatum. In digest mode settle() is a no-op returning the confirmed read.
  * `read` defaults to suiRead (Tatum first; reads fall back only on quota errors, writes never).
  */
-export async function verifyPayment(p, { read = suiRead, now = Date.now(), key, to } = {}) {
+export async function verifyPayment(p, { read = suiRead, now = Date.now(), clock = Date.now, key, to } = {}) {
   to ||= payTo();
   const quote = parseNonce(p.nonce, { now, key, to });
   const base = { to, amount: quote.amount, issuedMs: quote.issuedMs, expMs: quote.expMs, payer: quote.payer, now };
@@ -231,7 +231,7 @@ export async function verifyPayment(p, { read = suiRead, now = Date.now(), key, 
       if (!done?.status?.success) throw new PayError('tx_failed', 'payment transaction failed at execution');
       await read('core.waitForTransaction', (c) => c.waitForTransaction({ digest: done.digest, timeout: 30_000 })).catch(() => null);
       const { tx, provider } = await readTx(done.digest, read);
-      const r = checkTx(tx, { ...base, now: Date.now() });
+      const r = checkTx(tx, { ...base, now: clock() });
       return { quote, mode: 'transaction', digest: done.digest, payer: r.payer, paid: r.paid, timestampMs: r.timestampMs, simulatedVia: sim.provider, executedVia: ex.provider, verifiedVia: provider };
     },
   };

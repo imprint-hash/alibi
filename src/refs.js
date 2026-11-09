@@ -49,7 +49,7 @@ export async function references(spec, active, fromSec, toSec, symbolsList) {
   const map = PYTH_CODES[spec.pythCode];
   const out = [];
   if (map?.hlCoin) {
-    const ref = { name: `Hyperliquid ${map.hlCoin}`, kind: 'hyperliquid', independent: true, candles: [], note: 'Perp traded on Hyperliquid (trade.xyz dex); trades 24/7, so it keeps moving when ICE is closed. Its contract month differs, so Alibi compares after removing the recent basis.', error: null };
+    const ref = { name: `Hyperliquid ${map.hlCoin}${map.hlThin ? ' (thin: ~$2M/day)' : ''}`, kind: 'hyperliquid', independent: true, thin: !!map.hlThin, candles: [], note: `Perp traded on Hyperliquid (trade.xyz dex); trades 24/7. Alibi compares after removing the recent basis.${map.hlThin ? ' Thin reference: low volume, so its prices carry less weight as evidence.' : ''}`, error: null };
     try {
       ref.candles = await hyperliquidCandles(map.hlCoin, fromSec, toSec);
       if (!ref.candles.length) ref.candles = recordedHyperliquid(map.hlCoin, fromSec, toSec);

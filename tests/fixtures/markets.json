@@ -70,5 +70,14 @@
   "startDate": "2026-11-06T13:01:02Z",
   "endDate": "2026-11-09T22:00:00Z",
   "threshold": null
+ },
+ "usdjpy-up-or-down-on-november-9-2026": {
+  "slug": "usdjpy-up-or-down-on-november-9-2026",
+  "question": "US Dollar / Japanese Yen (USD/JPY) Up or Down on November 9?",
+  "rules": "This market will resolve to \"Up\" if the reference price for US Dollar / Japanese Yen (USD/JPY) on November 9, 2026 is higher than the reference price for the most recent prior reference day. This market will resolve to \"Down\" if it is lower. If the two reference prices are exactly equal, this market will resolve 50-50.\n\nFor each day, the reference price is the \"Close\" value of the Pyth 1-minute candle timestamped 4:59 PM ET (covering 4:59:00–4:59:59 PM ET) on that date. Reference prices will be used exactly as published by Pyth, without rounding.\n\nA \"reference day\" is any day on which the applicable trading session for US Dollar / Japanese Yen (USD/JPY), per the trading-hours schedule listed on Pyth, includes 4:59 PM ET. E.g., ordinarily, a market on Monday would refer to the previous Friday for its reference price, since weekend sessions (where applicable) do not include a 4:59 PM ET close; if that Friday were a market holiday, it would refer to the next most recent prior reference day. All times are Eastern Time, and each day refers to the Eastern Time calendar date.\n\nIf no valid Pyth Close value exists for the 4:59 PM ET 1-minute candle on any day for which a reference price is being determined — including November 9, 2026 itself, such as on a day with shortened trading hours — the last valid Pyth price published prior to 5:00 PM ET on that date will be used as that day's reference price. If no valid Pyth price is published at all on the prior reference day — due to a system outage, data failure, or other technical disruption — the next most recent prior reference day on which a valid Pyth price was published will be used in its place. If no valid Pyth price is published at all on November 9, 2026, or if November 9, 2026 is not a trading day under the applicable trading-hours schedule as listed on Pyth, this market will resolve 50-50.\n\nThe resolution source for this market is Pyth, specifically the \"Close\" value of the relevant 1-minute candle for US Dollar / Japanese Yen (USD/JPY) available at https://pythdata.app/explore/FX.USD%2FJPY. Historical 1-minute candles may be accessed by appending a Unix timestamp (seconds) to the Pyth chart URL using the \"t=\" parameter.",
+  "resolutionSource": "https://pythdata.app/explore/FX.USD%2FJPY",
+  "startDate": "2026-11-06T13:01:06Z",
+  "endDate": "2026-11-09T22:00:00Z",
+  "threshold": null
  }
 }

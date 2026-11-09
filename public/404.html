@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Alibi · page not found</title>
+<meta name="theme-color" content="#090C22">
+<meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="/" aria-label="Alibi home"><span class="mark" aria-hidden="true"></span>alibi</a>
+  <nav class="links" id="links" aria-label="Sections"><a href="/#learned">Learned</a><a href="/#evidence">Evidence</a><a href="/#plans">Plans</a></nav>
+  <div class="nav-right">
+    <button type="button" class="menu-btn" aria-expanded="false" aria-controls="links">Menu</button>
+    <a class="nav-cta" href="/">Check a market</a>
+  </div>
+</header>
+<main>
+  <section class="page-head nf">
+    <p class="kicker mono">404</p>
+    <h1><span>This page has no alibi</span></h1>
+    <p class="lede">Nothing lives at this address. To check a market, paste its Polymarket link on the home page.</p>
+    <div class="actions">
+      <a class="btn primary" href="/">Check a market</a>
+      <a class="btn ghost" href="/proof">See the proof</a>
+    </div>
+  </section>
+</main>
+<footer class="foot">
+  <p class="built">Built on <span class="cred"><img src="/brand/tatum-icon.svg" alt="" width="18" height="14"><strong>Tatum</strong> (Sui gRPC)</span> · <span class="cred"><img src="/brand/walrus-memory-favicon.svg" alt="" width="16" height="16"><strong>Walrus Memory</strong></span> · <strong>Pyth</strong></p>
+  <p class="foot-links"><a href="/">Home</a><a href="/proof">Proof</a></p>
+</footer>
+<script>
+  // mobile menu (same behaviour as the home page)
+  (() => { const b = document.querySelector('.menu-btn'), l = document.getElementById('links'); b && b.addEventListener('click', () => { const o = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', o); l.classList.toggle('open', o); }); })();
+</script>
+</body>
+</html>

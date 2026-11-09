@@ -13,6 +13,7 @@ export const PYTH_CODES = {
   'Metal.XAU/USD': { instrument: 'XAU', venue: 'Pyth spot gold', spot: true, pythSymbol: 'Metal.XAU/USD', hlCoin: 'xyz:GOLD', indexFeeds: [] },
   'Metal.XAG/USD': { instrument: 'XAG', venue: 'Pyth spot silver', spot: true, pythSymbol: 'Metal.XAG/USD', hlCoin: 'xyz:SILVER', indexFeeds: [] },
   'FX.EUR/USD': { instrument: 'EURUSD', venue: 'Pyth spot FX', spot: true, pythSymbol: 'FX.EUR/USD', hlCoin: 'xyz:EUR', indexFeeds: [] },
+  'FX.USD/JPY': { instrument: 'USDJPY', venue: 'Pyth spot FX', spot: true, pythSymbol: 'FX.USD/JPY', hlCoin: 'xyz:JPY', hlThin: true, indexFeeds: [] },
 };
 
 const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
@@ -196,7 +197,8 @@ export async function extractRules(market, { ai = true } = {}) {
   }
   spec.ruleCheck = check;
   spec.inScope = spec.source === 'pyth' && !!PYTH_CODES[spec.pythCode];
-  spec.scopeNote = spec.source !== 'pyth' ? `Settles on ${spec.source || 'an unrecognised source'}; Alibi covers Pyth-settled markets only.` : !PYTH_CODES[spec.pythCode] ? `Pyth code "${spec.pythCode}" is not mapped yet.` : null;
+  const SOURCE_NAMES = { binance: 'Binance', chainlink: 'Chainlink', pyth: 'Pyth' };
+  spec.scopeNote = spec.source !== 'pyth' ? `Settles on ${SOURCE_NAMES[spec.source] || spec.source || 'an unrecognised source'}; Alibi covers Pyth-settled markets only.` : !PYTH_CODES[spec.pythCode] ? `Pyth code "${spec.pythCode}" is not mapped yet.` : null;
   return spec;
 }
 

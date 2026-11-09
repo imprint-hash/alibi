@@ -215,7 +215,7 @@ const TEXT = {
   repeated: (f) => `Same print repeated for ${f.maxRun} straight minutes while the market was open.`,
   staleness: (f) => `Longest gap with no fresh price while open: ${Math.round(f.maxGapSec / 60)} min.`,
   confidence: (f) => `Pyth confidence blew out to ${f.ratio}× its normal width (${f.worstConfBps} bps).`,
-  history: (f) => `${f.precedents} precedent(s) in Walrus Memory at this exact settlement window${f.otherSameFeed ? ` (+${f.otherSameFeed} other incident(s) on this feed)` : ''}.`,
+  history: (f) => `${f.precedents} precedent(s) in Walrus Memory in this settlement window (−14…+6 min)${f.otherSameFeed ? ` (+${f.otherSameFeed} other incident(s) on this feed)` : ''}.`,
   thin: (f) => (f.settleState ? `Settlement minute falls in ${f.settleState} hours; ` : '') + `${Math.round(f.thinShare * 100)}% of the open window is outside core liquidity.`,
 };
 

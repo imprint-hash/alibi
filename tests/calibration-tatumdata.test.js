@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { q, shareAtOrAbove, minuteMetrics, deriveThresholds, strongOutliers } from '../src/calibrate.js';
 import { calibrationFor, applyCalibration } from '../src/calibration.js';
 import { mistToUsd } from '../src/tatumdata.js';
+import { effectiveSeverity, classify } from '../src/learn.js';
+import * as mem from '../src/memory.js';
 
 test('q is nearest-rank; shareAtOrAbove counts the tail', () => {
   const xs = Array.from({ length: 100 }, (_, i) => i + 1);
@@ -35,12 +37,17 @@ test('deriveThresholds: thresholds are the p99 of settlement-window minutes; pla
   const around = Array.from({ length: 50 }, (_, i) => mk(1, i / 5, 1, 3));
   const baseline = Array.from({ length: 100 }, () => mk(0.5, 1, 1, 1));
   const { thresholds, stats } = deriveThresholds({ settle, around, baseline, divergence: { settleP99: 7.25 } });
-  assert.equal(thresholds.confRatio, 2); // p99 of (conf / baseline median 0.5) across 100 window minutes
-  assert.equal(thresholds.spikeBps, 9.6);
+  assert.equal(thresholds.settlementOnly.confRatio, 2); // p99 of (conf / baseline median 0.5) across 100 window minutes
+  assert.equal(thresholds.confRatio, 2); // max(window p99 2, ordinary p99 1)
+  assert.equal(thresholds.settlementOnly.spikeBps, 9.6);
+  assert.equal(thresholds.spikeBps, 9.6); // ordinary p99 is 1
   assert.equal(thresholds.staleGapSec, 5); // floor
   assert.equal(thresholds.divergenceBps, 7.3);
   assert.equal(stats.minutes.window, 100);
   assert.equal(stats.confMultiple.shareOfBaselineAtThreshold, 0);
+  const calm = deriveThresholds({ settle, around, baseline: baseline.map((m) => ({ ...m, excursionBps: 40 })), divergence: {} });
+  assert.equal(calm.thresholds.spikeBps, 40, 'detector threshold never below the ordinary-minute p99');
+  assert.equal(calm.thresholds.settlementOnly.spikeBps, 9.6);
 });
 
 test('strongOutliers keeps only minutes at 2× the threshold, as real-labelled incidents', () => {
@@ -68,4 +75,34 @@ test('calibration file → detector params; missing instrument falls back to fee
 test('mistToUsd converts gas to SUI and dollars', () => {
   assert.deepEqual(mistToUsd('5040603', 0.84258248), { sui: 0.005041, usd: 0.00425 });
   assert.equal(mistToUsd(1e9, NaN).usd, null);
+});
+
+test('history re-measures remembered incidents against the 90-day calibration (not the stored scan-time severity)', () => {
+  const rec = mem.decode(mem.encode('incident', { instrument: 'XAU', feed: 'Metal.XAU/USD', pattern: 'confidence', ratio: 23.5, severity: '5.88', when: '2026-11-06T21:55:00Z' }));
+  assert.equal(effectiveSeverity(rec, null).value, 5.88);
+  const e = effectiveSeverity(rec, { confRatio: 23.9 });
+  assert.ok(Math.abs(e.value - 23.5 / 23.9) < 1e-9);
+  assert.match(e.basis, /90-day p99 23.9/);
+  const ctx = { instrument: 'XAU', feed: 'Metal.XAU/USD', settleMinuteET: 1019 };
+  const now = Date.parse('2026-11-09T12:00:00Z');
+  const before = classify([{ blobId: 'a', text: '', record: rec }], ctx, now).sameWindow[0].weight;
+  const after = classify([{ blobId: 'a', text: '', record: rec }], { ...ctx, calibration: { confRatio: 23.9 } }, now).sameWindow[0].weight;
+  assert.ok(after < before, 'calibrated weight is smaller for a ~p99 event');
+  assert.equal(effectiveSeverity({ pattern: 'spike-revert', size_bps: 40 }, { spikeBps: 20 }).value, 2);
+});
+
+test('recorded Tatum Data API evidence for Sui: rates supported; tx history and notifications not (no Sui in their chain lists)', async () => {
+  const { readFileSync } = await import('node:fs');
+  const ev = JSON.parse(readFileSync(new URL('../proof/tatum-data-support.json', import.meta.url)));
+  assert.equal(ev.chain, 'sui-mainnet');
+  assert.equal(ev.apis['exchangeRate.SUI'].supported, true);
+  assert.ok(Number(ev.apis['exchangeRate.SUI'].sample.value) > 0);
+  assert.equal(ev.apis['exchangeRate.USDC'].supported, true);
+  for (const k of ['transactionHistory', 'notifications.addressEvent']) {
+    assert.equal(ev.apis[k].supported, false);
+    assert.equal(ev.apis[k].http, 400);
+    assert.equal(ev.apis[k].suiInAllowedChains, false);
+    assert.ok(ev.apis[k].allowedChains.length > 5);
+  }
+  assert.ok(!JSON.stringify(ev).match(/0x[0-9a-f]{64}/), 'no wallet address in the evidence');
 });

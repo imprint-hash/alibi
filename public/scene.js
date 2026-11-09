@@ -31,7 +31,8 @@
     { x: 3, y: 56, w: 120, rx: [8, 22], ry: [-24, 0], rz: [-20, -8], d: 33, k: 'far' },
     { x: 30, y: 4, w: 84, rx: [40, 52], ry: [0, 22], rz: [20, 34], d: 27, k: 'far' },
   ];
-  const plates = PLATES.map((p, i) => `<div class="plate ${p.k}" style="left:${p.x}%;top:${p.y}%;--w:${p.w}px;--rx0:${p.rx[0]}deg;--rx1:${p.rx[1]}deg;--ry0:${p.ry[0]}deg;--ry1:${p.ry[1]}deg;--rz0:${p.rz[0]}deg;--rz1:${p.rz[1]}deg;--dur:${p.d}s;--del:-${(i * 3.7).toFixed(1)}s">
+  // plates below the top third sit over the text column on phones, so they are hidden there (.mob-hide)
+  const plates = PLATES.map((p, i) => `<div class="plate ${p.k}${p.y > 33 ? ' mob-hide' : ''}" style="left:${p.x}%;top:${p.y}%;--w:${p.w}px;--rx0:${p.rx[0]}deg;--rx1:${p.rx[1]}deg;--ry0:${p.ry[0]}deg;--ry1:${p.ry[1]}deg;--rz0:${p.rz[0]}deg;--rz1:${p.rz[1]}deg;--dur:${p.d}s;--del:-${(i * 3.7).toFixed(1)}s">
       <div class="plate-in">${layer(-9, false)}${layer(-4.5, false)}${layer(0, true)}</div></div>`).join('');
 
   // Tatum blocks: exact proportions of the T mark (270 × 210 units), scattered start positions per block

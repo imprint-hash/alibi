@@ -1,6 +1,6 @@
 // Agent micro-API: POST /api/agent/check (x402-style paywall, USDC on Sui) and GET /api/agent/price.
 // Shared by server.js and the Vercel functions in api/agent/. Protocol and verification live in src/pay.js.
-import { runLive, marketKey } from './live.js';
+import { runLive, marketKey, normalizeInput } from './live.js';
 import { clientIp } from './handler.js';
 import * as pay from '../src/pay.js';
 
@@ -13,10 +13,12 @@ const send = (res, code, body, extra = {}) => {
 };
 
 async function readBody(req) {
-  if (req.body !== undefined) { try { return typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {}; } catch { return {}; } }
-  let s = '';
-  for await (const c of req) { s += c; if (s.length > 4096) break; }
-  try { return JSON.parse(s || '{}'); } catch { return {}; }
+  try {
+    if (req.body !== undefined) return typeof req.body === 'string' ? JSON.parse(req.body || '{}') : req.body || {};
+    let s = '';
+    for await (const c of req) { s += c; if (s.length > 4096) break; }
+    return JSON.parse(s || '{}');
+  } catch { return {}; }
 }
 
 const resourceUrl = (req) => `${req.headers['x-forwarded-proto'] || 'http'}://${req.headers['x-forwarded-host'] || req.headers.host || 'localhost'}/api/agent/check`;
@@ -60,7 +62,7 @@ export async function handleAgentPrice(req, res) {
 export async function handleAgentCheck(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'POST {"url": "<polymarket link>"}' }, { allow: 'POST' });
   const body = await readBody(req);
-  const input = String(body?.url || '').trim();
+  const input = normalizeInput(body?.url);
   const key = marketKey(input);
   if (!key) return send(res, 400, { error: 'Send {"url": "<polymarket.com market link or slug>"}. You are not charged for a bad request.' });
 
