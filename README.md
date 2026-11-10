@@ -12,6 +12,14 @@ Blog post: [alibi-does-the-price-that-settles-your-b…](https://medium.com/@osa
 
 Demo video: https://youtu.be/Nt4z9Y-o3xY
 
+## Who it's for
+
+- **People who bet on Polymarket's price markets** (gold, silver, EUR/USD, USD/JPY). Before you buy, you can see whether the one Pyth price that will settle your bet is behaving normally at that minute.
+- **Trading bots and AI agents** that place these bets on their own. They can pay 0.05 USDC per check over x402 on Sui, with no account or API key.
+- **Market makers and resolution reviewers** who need a timestamped, on-chain record (Sui) of what the settlement feed said, and a memory (Walrus) of past incidents on that feed.
+
+Alibi is not for predicting the outcome. It only checks whether the price that will decide the outcome can be trusted.
+
 ## How to test
 
 1. Open **https://alibi-flame.vercel.app**.
