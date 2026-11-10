@@ -62,9 +62,10 @@ Each factor has a severity 0–1; points = weight × severity. Unmeasured factor
 - History severity = 1 − exp(−Σ weights) (saturates; one strong recent precedent ≈ 0.6).
 - Memories for other feeds or instruments are ignored and listed with the reason. A user "benign" verdict
   (alibi-user) lowers the matching live factor and halves the history factor.
-- When precedents exist the verdict says what they show, from the strongest precedent's pattern (e.g. "Pyth's
-  confidence has blown out at this exact minute before"; spikes, divergence, staleness and frozen prints have their own wording),
-  and the report's **Precedents** section quotes each one with its date and Walrus blob ID.
+- When precedents exist, the report says what they show, using the strongest precedent's pattern (e.g. "Pyth's
+  confidence has blown out before, near this settlement minute (4 min before it)"). Spikes, divergence, staleness
+  and frozen prints have their own wording. The precedent leads the verdict only when the score is elevated;
+  otherwise it appears as a second line. The **Precedents** section quotes each one with its date and Walrus blob ID.
 
 Walrus namespaces: `alibi-incidents`, `alibi-sources`, `alibi-evidence`, `alibi-user`. Recall is live from Walrus
 mainnet (relayer `relayer.memory.walrus.xyz`); the offline mock is used only in tests. The same event recalled twice
@@ -101,6 +102,23 @@ of the settlement-window p99 and the ordinary-minute p99, so it fires on at most
 
 The backtest found **no** settlement-window minute at twice a threshold in 90 days, so it added no new incidents to
 Walrus. Gold's 6 Nov 21:55Z blow-out (23.5×) sits right at the 90-day p99 (23.9×): a top-1% event, not a freak.
+
+## What memory proves, and what it can't prove yet
+
+**What we show:** memory changes the answer, and you can check each change. The same live gold data scores 13
+without Walrus precedents and 19 with them (`proof/before.json`, `proof/after.json`). The report names each
+precedent and gives its blob ID, so anyone can open it on Walrus and check it.
+
+**What we do not claim:** that the higher score is *more accurate*. Proving that needs settlement minutes that went
+wrong and that Alibi flagged beforehand. Those events are rare by design. The calibration found no settlement-window
+minute at twice a threshold in 90 days, and the strongest precedent (6 Nov) is a top-1% event. With incidents this
+rare, an accuracy number from a few weeks of data would be noise. So every precedent in memory comes from our
+10-day scan, and we keep only the strong ones (14 incidents). We chose fewer, real records over many weak ones.
+
+**How accuracy gets measured:** each paid or free check is a prediction about one settlement minute. After the
+market settles, the next step is to write the actual outcome back to Walrus (clean, or an incident at that
+minute), score those predictions over time, and publish the hit rate once enough incidents have built up. The
+memory layer for this already exists: the same namespaces and blob IDs, plus one outcome record per checked market.
 
 ## Settlement rules Alibi follows (gold, silver, EUR/USD up/down)
 
